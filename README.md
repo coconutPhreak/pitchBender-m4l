@@ -69,8 +69,8 @@ Test each stage on Push 3 Standalone before you start the next. Each stage has a
 - [x] Stage 3 (#3): a step p-lock covers only its own step (see docs/plock-scope.md)
 - [x] Stage 4 (#4): envelope (Attack, Peak, Decay, End, curves) as pitch bend, per-note MPE
 - [x] Stage 5 (#5): scale awareness (Live API scale reads work in standalone)
-- [ ] Stage 6 (#6): incoming bend with MPE (master channel) and Bend Amount
-- [ ] Stage 7 (#7): Slide and Pressure (per-note MPE)
+- [x] Stage 6 (#6): incoming bend with MPE (master channel) and Bend Amount
+- [x] Stage 7 (#7): Slide and Pressure (per-note MPE)
 - [ ] Stage 8 (#8): CPU check on Push with the full device and a bass instrument running
 
 ## Decisions
