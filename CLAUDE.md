@@ -4,7 +4,7 @@ A mono Max for Live MIDI effect for bass lines. Each placeholder note triggers t
 
 ## Hard constraints
 
-- MIDI effect on the track, before the instrument. Mono: the device owns its note-offs.
+- MPE MIDI effect (`is_mpe` 1) on the track, before an MPE instrument. Mono, but each trigger takes the next member channel (2–16) so release tails keep their pitch. The device owns its note-offs and writes its note-on/off and pitch bend as raw bytes on that channel. Probe result: docs/mpe-probe.md.
 - All controls are automatable `live.*` parameters in the Push bank layout from the spec's Parameters table (`parameters.parameterbanks`). The setup parameters are not automatable.
 - Native Max objects only: no externals, no `node.script`, no `moses` (it breaks the first load on Push standalone; found in retrig-m4l). `scripts/build_amxd.py` keeps an allowlist of object classes that passed retrig-m4l's Push standalone probes (`../retrig-m4l/scripts/make_probes.py`). A new class must pass a probe before it goes on that list.
 - Timing runs on the Max scheduler (`delay` in ticks while playing, ms when stopped), not JS.
