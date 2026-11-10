@@ -13,7 +13,7 @@ This file covers building the device, loading it in Live and on Push, and the ch
    This writes `build/PitchBender.amxd`. The build refuses to run if a patch cord points at a missing box or inlet, if a Push bank names an unknown parameter, or if an object class hasn't passed the Push standalone probes.
 2. In Live, make a MIDI track and load an **MPE** bass instrument on it (Meld, Drift, Wavetable, or an MPE plug-in in MPE mode). Since v4.1 the device's output is per-note MPE, so non-MPE instruments (e.g. Operator) won't follow the pitch envelope.
 3. Drag `build/PitchBender.amxd` onto the track, *before* the instrument. Put it directly on the track, not inside a rack, because the clip-stop check watches the track's clip slots.
-4. The device should show Note (C1), Velocity (100), Length (1/16, which is 1 step), Attack (20 %), Peak (0 st), A Curve (0), Decay (30 %), End (0 st), D Curve (0), Envelope (On), Bend Rng (48 st), Scale (On), Slide (64), Pressure (0), Breath (0) and Bend Amt (100 %). Under Peak and End, small labels show their target note.
+4. The device should show Note (C1), Velocity (100), Length (1/16, which is 1 step), Attack (20 %), Peak (0 st), A Curve (0), Decay (30 %), End (0 st), D Curve (0), Envelope (On), Bend Rng (48 st), Scale (On), Slide (64), Pressure (0), Breath (0), Bend Amt (100 %), S Depth (0), S Rel (100 %) and S Curve (0). Under Peak and End, small labels show their target note.
 5. Bend Range is the MPE per-note bend range **each way** (default 48, the MPE standard). It must match the instrument's per-note (MPE) bend range, or every pitch lands off.
 
 After every rebuild, drag the new `PitchBender.amxd` in again to replace the old one.
@@ -42,7 +42,7 @@ Paste the console output back, along with any red error lines that appear when t
 
 ## Load check (do this first)
 
-- **L1:** Load the device. The Max console prints `pitchbender: loaded v6.2` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
+- **L1:** Load the device. The Max console prints `pitchbender: loaded v7` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 
@@ -156,11 +156,16 @@ Incoming pitch bend (Push's touch strip, a clip's pitch-bend envelope, an earlie
 Per-note MPE Slide (CC74) and Pressure, on bank Perform encoders 3 and 4 (Breath, a master-channel CC2, is on encoder 5 since v6.1), sent on each note's own channel after its starting bend and before its note-on, and again straight after the note-on (since v6.2). In Meld's modulation matrix, map **MPE Slide** to the filter cutoff and **MPE Pressure** to something else audible.
 
 - **S7.1 Per note:** Slide 0 vs 127 changes the cutoff on the next notes. Same for Pressure.
-- **S7.2 Live knob:** turn Slide while a long note (Length 16 steps) holds: the sound follows at once.
+- **S7.2 Live knob:** turn Pressure while a long note (Length 16 steps) holds: the sound follows at once. Slide is per note since v7: turning it changes the next note, not the one playing.
 - **S7.3 P-locks:** p-lock Slide 127 on one step only: that note is bright, its neighbours aren't. Its release tail keeps its own Slide while the next note plays.
 - **S7.4 Master CCs:** a CC on the master channel (e.g. the mod wheel) still passes through.
 - **S7.5 Push standalone:** repeat S7.1, S7.3 and S7.6 on Push 3 Standalone.
 - **S7.7 Overlapping notes (v6.2):** placeholders on steps 1 and 9, with Length longer than the gap (e.g. 12 steps), so each note is still sounding when the next starts. P-lock different Slide and Pressure values on the two steps. Every note takes its own values, with no stuck values and without touching the knobs. Note which voice mode Meld is in (poly, mono, legato).
+- **S7.8 Slide envelope (v7):** Meld in poly, MPE Slide → cutoff, Slide 20, S Depth +100, S Rel 100 %, Length 4 steps. Each note opens bright and closes to Slide exactly at its end (Debug: `slide 120` … `slide 20`). S Depth 0: static Slide, as before.
+- **S7.9 Release time:** S Rel 50 %: the sweep finishes halfway and holds. S Rel 200 %: the note ends mid-sweep (about 70 with the values above) and holds there through its tail. S Rel 0 %: straight to Slide.
+- **S7.10 Curve:** S Curve −100 drops fast then tails off (classic filter decay); +100 holds high then closes quickly at the end.
+- **S7.11 Negative depth:** Slide 100, S Depth −100: each note rises from 0 to 100.
+- **S7.12 Overlap and p-locks:** placeholders on steps 1 and 9, Length 12 steps, different S Depth p-locks per step: each note gets its own sweep, and the first note's tail keeps its own Slide.
 - **S7.6 Breath (v6.1):** Breath (bank Perform, encoder 5) sends CC2 on the master channel (channel 1) with each note, before its note-on, and at once when turned. Map CC2 in the instrument (Meld: check whether its mod matrix offers a CC2 / Breath source; otherwise test with a plug-in that maps CC2) and check that 0 vs 127 changes the sound. A p-lock on one step changes that note.
 
 ## Stage 8: CPU on Push ([#8](https://github.com/coconutPhreak/pitchBender-m4l/issues/8))
@@ -173,7 +178,7 @@ Per-note MPE Slide (CC74) and Pressure, on bank Perform encoders 3 and 4 (Breath
 
 ## Push 3
 
-- **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Length, Attack, Peak, A Curve, Decay, End and D Curve on encoders 1–8. Bank **Perform** shows Velocity, Envelope, Slide, Pressure, Breath and Bend Amt on encoders 1–6. Bank **Setup** shows Bend Rng on encoder 3 and Scale on encoder 4. The console shows no `parameter ... not found` line.
+- **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Length, Attack, Peak, A Curve, Decay, End and D Curve on encoders 1–8. Bank **Perform** shows Velocity, Envelope, Slide, Pressure, Breath and Bend Amt on encoders 1–6. Bank **Slide Env** shows Slide, S Depth, S Rel and S Curve on encoders 1–4. Bank **Setup** (now the fourth bank) shows Bend Rng on encoder 3 and Scale on encoder 4. The console shows no `parameter ... not found` line.
 - **P1a Stage 1 on Push:** repeat S1.1, S1.3, S1.5 and S1.6 on Push standalone with a step-sequenced clip.
 - **P1b Stage 4 on Push:** repeat S4.2, S4.5, S4.14, S4.15 and S4.16 on Push standalone. Also play fast notes (1/16 placeholders, Length 1 step, Peak +12, Attack 50 %) on a bass instrument and check that Push's CPU meter stays reasonable and nothing glitches.
 

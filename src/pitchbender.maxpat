@@ -18,7 +18,7 @@
   "openrect": [
    0.0,
    0.0,
-   556.0,
+   706.0,
    169.0
   ],
   "bglocked": 0,
@@ -38,7 +38,7 @@
   "boxanimatetime": 500,
   "enablehscroll": 1,
   "enablevscroll": 1,
-  "devicewidth": 556.0,
+  "devicewidth": 706.0,
   "description": "Mono pitch-envelope MIDI effect for bass lines, with per-note MPE output.",
   "digest": "",
   "tags": "",
@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v6.2 (Stages 6-7, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v7 (Stages 6-7 + Slide envelope, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -258,7 +258,7 @@
     "box": {
      "id": "c-trig2",
      "maxclass": "comment",
-     "text": "Right to left: (8) kill the sounding note, (7) next MPE channel, (6) Trigger Length: note timer and pitch envelope, whose first bend goes out now, (5) Slide, (4) Pressure, (3) Breath, (2) velocity, (1) Note -> note-on, (0) Slide and Pressure again, after the note-on (v6.2: with overlapping notes the instrument ignored the values sent before the note-on). Parameters are read here (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note.",
+     "text": "Right to left: (8) kill the sounding note, (7) next MPE channel, (6) Trigger Length: note timer and pitch envelope, whose first bend goes out now, (5) Slide envelope start (latched, v7), (4) Pressure, (3) Breath, (2) velocity, (1) Note -> note-on, (0) Slide start value and Pressure again, after the note-on (v6.2: with overlapping notes the instrument ignored values sent before the note-on). Parameters are read here (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -492,7 +492,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v6.2",
+     "text": "PITCHBENDER v7",
      "patching_rect": [
       700.0,
       20.0,
@@ -1681,7 +1681,7 @@
     "box": {
      "id": "c-dbg",
      "maxclass": "comment",
-     "text": "Debug: turn on to print note-ons (P V), note-offs (P 0), each pitch-bend value sent (bend N, 8192 = centre), the timer setting, and what ended each note to the Max console.",
+     "text": "Debug: turn on to print note-ons (P V), note-offs (P 0), each pitch-bend value sent (bend N, 8192 = centre), each Slide value sent (slide N), the timer setting, and what ended each note to the Max console.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -1818,7 +1818,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v6.2",
+     "text": "loaded v7",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -6353,7 +6353,7 @@
        "parameter_initial": [
         64
        ],
-       "parameter_annotation_name": "Per-note MPE Slide (CC74) sent with each note; map it in the instrument"
+       "parameter_annotation_name": "Per-note MPE Slide (CC74): the value the Slide envelope ends on (its offset); with S Depth 0, the static Slide value"
       }
      }
     }
@@ -6645,27 +6645,6 @@
    },
    {
     "box": {
-     "id": "t-dslide",
-     "maxclass": "newobj",
-     "text": "t b i",
-     "numinlets": 1,
-     "numoutlets": 2,
-     "outlettype": [
-      "bang",
-      "int"
-     ],
-     "patching_rect": [
-      4200.0,
-      120.0,
-      64.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
      "id": "i-slide",
      "maxclass": "newobj",
      "text": "i",
@@ -6678,27 +6657,6 @@
       4200.0,
       150.0,
       40.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
-     "id": "t-oslide",
-     "maxclass": "newobj",
-     "text": "t b i",
-     "numinlets": 1,
-     "numoutlets": 2,
-     "outlettype": [
-      "bang",
-      "int"
-     ],
-     "patching_rect": [
-      4200.0,
-      175.0,
-      64.0,
       20.0
      ],
      "fontname": "Arial Bold",
@@ -7159,6 +7117,849 @@
       34.0
      ],
      "linecount": 2,
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "c-senv",
+     "maxclass": "comment",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "linecount": 3,
+     "patching_rect": [
+      5200.0,
+      40.0,
+      900.0,
+      48.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0,
+     "text": "15. Slide envelope (v7): per note, CC74 starts at Slide + S Depth and moves to Slide (the offset) over S Release (% of Length, up to 400 %: past 100 % the note ends mid-release and Slide holds there), shaped like the pitch curves: y = x^(2^(c/50)). Latched at the trigger, sent before and again after the note-on, then by its own clock (same tick/ms unit as the pitch envelope), only when the value changes. Kills stop it."
+    }
+   },
+   {
+    "box": {
+     "id": "obj-sdepth",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Slide Depth",
+     "patching_rect": [
+      5200.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      556.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Slide Depth",
+       "parameter_shortname": "S Depth",
+       "parameter_type": 1,
+       "parameter_unitstyle": 0,
+       "parameter_mmin": -127.0,
+       "parameter_mmax": 127.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_annotation_name": "Slide envelope depth: the note starts at Slide + Depth and moves to Slide. 0 = no envelope"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-srel",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Slide Release",
+     "patching_rect": [
+      5260.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      606.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Slide Release",
+       "parameter_shortname": "S Rel",
+       "parameter_type": 0,
+       "parameter_unitstyle": 5,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 400.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        100.0
+       ],
+       "parameter_annotation_name": "Slide envelope time as % of Length. 100 % ends exactly at the note's end; above 100 % the note ends mid-release"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-scrv",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Slide Curve",
+     "patching_rect": [
+      5320.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      656.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Slide Curve",
+       "parameter_shortname": "S Curve",
+       "parameter_type": 0,
+       "parameter_unitstyle": 1,
+       "parameter_mmin": -100.0,
+       "parameter_mmax": 100.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        0.0
+       ],
+       "parameter_annotation_name": "Slide envelope shape: -100 fast drop and slow tail, 0 linear, +100 slow start and fast end"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "i-sdepth",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      5200.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "f-srel",
+     "maxclass": "newobj",
+     "text": "f",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "float"
+     ],
+     "patching_rect": [
+      5260.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "f-scrv",
+     "maxclass": "newobj",
+     "text": "f",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "float"
+     ],
+     "patching_rect": [
+      5320.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-sv",
+     "maxclass": "newobj",
+     "text": "expr max(0, min(127, int($f2 + ($f3 - $f2) * (($f4 <= 0.) + ($f4 > 0.) * pow(min($f1 / max($f4, 0.000001), 1.), pow(2., $f5 / 50.))) + 0.5)))",
+     "numinlets": 5,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5200.0,
+      440.0,
+      520.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-sst",
+     "maxclass": "newobj",
+     "text": "expr max(0, min(127, $i1 + $i2))",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5200.0,
+      260.0,
+      236.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-sstart",
+     "maxclass": "newobj",
+     "text": "t b b b b b",
+     "numinlets": 1,
+     "numoutlets": 5,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      5200.0,
+      200.0,
+      130.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-srun",
+     "maxclass": "newobj",
+     "text": "expr ($f1 > 0.) * ($i2 != 0)",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5500.0,
+      290.0,
+      208.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-sl3",
+     "maxclass": "newobj",
+     "text": "t i i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      5260.0,
+      230.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-srel",
+     "maxclass": "newobj",
+     "text": "t f f f",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "float",
+      "float",
+      "float"
+     ],
+     "patching_rect": [
+      5320.0,
+      230.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-Rv",
+     "maxclass": "newobj",
+     "text": "expr $f1 / 100.",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5320.0,
+      260.0,
+      117.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-Rend",
+     "maxclass": "newobj",
+     "text": "expr min($f1 / 100., 1.)",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5400.0,
+      260.0,
+      180.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-sdone",
+     "maxclass": "newobj",
+     "text": "expr $f1 >= $f2",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5600.0,
+      520.0,
+      117.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "gate-sloop",
+     "maxclass": "newobj",
+     "text": "gate 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5500.0,
+      330.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-s0",
+     "maxclass": "newobj",
+     "text": "t b b b",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      5200.0,
+      300.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-sn",
+     "maxclass": "newobj",
+     "text": "i 0",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      5700.0,
+      370.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-sn0",
+     "maxclass": "message",
+     "text": "0",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5700.0,
+      340.0,
+      23.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-slast",
+     "maxclass": "message",
+     "text": "-1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5760.0,
+      340.0,
+      30.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-schg",
+     "maxclass": "newobj",
+     "text": "expr $i1 != $i2",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5320.0,
+      500.0,
+      117.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-sx0",
+     "maxclass": "message",
+     "text": "0.",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5260.0,
+      340.0,
+      30.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "dly-sl",
+     "maxclass": "newobj",
+     "text": "delay 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "bang"
+     ],
+     "patching_rect": [
+      5500.0,
+      370.0,
+      60.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-stick",
+     "maxclass": "newobj",
+     "text": "t b b",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      5500.0,
+      400.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "plus-sn",
+     "maxclass": "newobj",
+     "text": "+ 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      5700.0,
+      400.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-scn",
+     "maxclass": "newobj",
+     "text": "t i i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      5700.0,
+      430.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-sx",
+     "maxclass": "newobj",
+     "text": "expr $i1 / $f2",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5600.0,
+      460.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-sx",
+     "maxclass": "newobj",
+     "text": "t f f",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "float",
+      "float"
+     ],
+     "patching_rect": [
+      5600.0,
+      490.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "sel-sdone",
+     "maxclass": "newobj",
+     "text": "sel 1",
+     "numinlets": 2,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      ""
+     ],
+     "patching_rect": [
+      5600.0,
+      550.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-sclose",
+     "maxclass": "message",
+     "text": "0",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5600.0,
+      580.0,
+      23.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-sv",
+     "maxclass": "newobj",
+     "text": "t i i i",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "int",
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      5200.0,
+      470.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "gate-ssend",
+     "maxclass": "newobj",
+     "text": "gate 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5200.0,
+      530.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-ssend",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      5200.0,
+      560.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-slv",
+     "maxclass": "newobj",
+     "text": "i 64",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      5260.0,
+      590.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-slv",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      5260.0,
+      620.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "pre-slide",
+     "maxclass": "newobj",
+     "text": "prepend slide",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      5400.0,
+      560.0,
+      90.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-init4",
+     "maxclass": "newobj",
+     "text": "t b b b",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      5800.0,
+      160.0,
+      86.0,
+      20.0
+     ],
      "fontname": "Arial Bold",
      "fontsize": 10.0
     }
@@ -11656,90 +12457,6 @@
    {
     "patchline": {
      "source": [
-      "obj-slide",
-      0
-     ],
-     "destination": [
-      "t-dslide",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-dslide",
-      1
-     ],
-     "destination": [
-      "i-slide",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-dslide",
-      0
-     ],
-     "destination": [
-      "i-slide",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-trig",
-      5
-     ],
-     "destination": [
-      "i-slide",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "i-slide",
-      0
-     ],
-     "destination": [
-      "t-oslide",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-oslide",
-      1
-     ],
-     "destination": [
-      "s-cc-b2",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-oslide",
-      0
-     ],
-     "destination": [
-      "s-cc-go",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
       "obj-pressure",
       0
      ],
@@ -12176,7 +12893,703 @@
       0
      ],
      "destination": [
+      "i-press",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-sdepth",
+      0
+     ],
+     "destination": [
+      "i-sdepth",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-srel",
+      0
+     ],
+     "destination": [
+      "f-srel",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-scrv",
+      0
+     ],
+     "destination": [
+      "f-scrv",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-slide",
+      0
+     ],
+     "destination": [
       "i-slide",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-trig",
+      5
+     ],
+     "destination": [
+      "t-sstart",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sstart",
+      4
+     ],
+     "destination": [
+      "i-sdepth",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-sdepth",
+      0
+     ],
+     "destination": [
+      "expr-sst",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-sdepth",
+      0
+     ],
+     "destination": [
+      "expr-srun",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sstart",
+      3
+     ],
+     "destination": [
+      "i-slide",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-slide",
+      0
+     ],
+     "destination": [
+      "t-sl3",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sl3",
+      1
+     ],
+     "destination": [
+      "expr-sv",
+      2
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sl3",
+      0
+     ],
+     "destination": [
+      "expr-sst",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-sst",
+      0
+     ],
+     "destination": [
+      "expr-sv",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sstart",
+      2
+     ],
+     "destination": [
+      "f-srel",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "f-srel",
+      0
+     ],
+     "destination": [
+      "t-srel",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-srel",
+      2
+     ],
+     "destination": [
+      "expr-Rv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-Rv",
+      0
+     ],
+     "destination": [
+      "expr-sv",
+      3
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-srel",
+      1
+     ],
+     "destination": [
+      "expr-Rend",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-Rend",
+      0
+     ],
+     "destination": [
+      "expr-sdone",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-srel",
+      0
+     ],
+     "destination": [
+      "expr-srun",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sstart",
+      1
+     ],
+     "destination": [
+      "f-scrv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "f-scrv",
+      0
+     ],
+     "destination": [
+      "expr-sv",
+      4
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-srun",
+      0
+     ],
+     "destination": [
+      "gate-sloop",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sstart",
+      0
+     ],
+     "destination": [
+      "t-s0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-s0",
+      2
+     ],
+     "destination": [
+      "m-sn0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-sn0",
+      0
+     ],
+     "destination": [
+      "i-sn",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-s0",
+      2
+     ],
+     "destination": [
+      "m-slast",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-slast",
+      0
+     ],
+     "destination": [
+      "expr-schg",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-s0",
+      1
+     ],
+     "destination": [
+      "m-sx0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-sx0",
+      0
+     ],
+     "destination": [
+      "expr-sv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-s0",
+      0
+     ],
+     "destination": [
+      "gate-sloop",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-sloop",
+      0
+     ],
+     "destination": [
+      "dly-sl",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-env-ms",
+      0
+     ],
+     "destination": [
+      "dly-sl",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-env-ticks",
+      0
+     ],
+     "destination": [
+      "dly-sl",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-stop",
+      0
+     ],
+     "destination": [
+      "dly-sl",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "dly-sl",
+      0
+     ],
+     "destination": [
+      "t-stick",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-stick",
+      1
+     ],
+     "destination": [
+      "i-sn",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-sn",
+      0
+     ],
+     "destination": [
+      "plus-sn",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "plus-sn",
+      0
+     ],
+     "destination": [
+      "t-scn",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-scn",
+      1
+     ],
+     "destination": [
+      "i-sn",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-scn",
+      0
+     ],
+     "destination": [
+      "expr-sx",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-U",
+      0
+     ],
+     "destination": [
+      "expr-sx",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-sx",
+      0
+     ],
+     "destination": [
+      "t-sx",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sx",
+      1
+     ],
+     "destination": [
+      "expr-sdone",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-sdone",
+      0
+     ],
+     "destination": [
+      "sel-sdone",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "sel-sdone",
+      0
+     ],
+     "destination": [
+      "m-sclose",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-sclose",
+      0
+     ],
+     "destination": [
+      "gate-sloop",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sx",
+      0
+     ],
+     "destination": [
+      "expr-sv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-stick",
+      0
+     ],
+     "destination": [
+      "gate-sloop",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-sv",
+      0
+     ],
+     "destination": [
+      "t-sv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sv",
+      2
+     ],
+     "destination": [
+      "expr-schg",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-schg",
+      0
+     ],
+     "destination": [
+      "gate-ssend",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sv",
+      1
+     ],
+     "destination": [
+      "gate-ssend",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sv",
+      0
+     ],
+     "destination": [
+      "expr-schg",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-ssend",
+      0
+     ],
+     "destination": [
+      "t-ssend",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-ssend",
+      1
+     ],
+     "destination": [
+      "s-cc-b2",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-ssend",
+      1
+     ],
+     "destination": [
+      "i-slv",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-ssend",
+      0
+     ],
+     "destination": [
+      "s-cc-go",
       0
      ]
     }
@@ -12188,7 +13601,115 @@
       0
      ],
      "destination": [
-      "i-press",
+      "i-slv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-slv",
+      0
+     ],
+     "destination": [
+      "t-slv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-slv",
+      1
+     ],
+     "destination": [
+      "s-cc-b2",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-slv",
+      0
+     ],
+     "destination": [
+      "s-cc-go",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-ssend",
+      0
+     ],
+     "destination": [
+      "pre-slide",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "pre-slide",
+      0
+     ],
+     "destination": [
+      "gate-dbg",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "thisdev",
+      0
+     ],
+     "destination": [
+      "t-init4",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init4",
+      2
+     ],
+     "destination": [
+      "obj-sdepth",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init4",
+      1
+     ],
+     "destination": [
+      "obj-srel",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init4",
+      0
+     ],
+     "destination": [
+      "obj-scrv",
       0
      ]
     }
@@ -12241,6 +13762,20 @@
     },
     "2": {
      "index": 2,
+     "name": "Slide Env",
+     "parameters": [
+      "Slide",
+      "Slide Depth",
+      "Slide Release",
+      "Slide Curve",
+      "-",
+      "-",
+      "-",
+      "-"
+     ]
+    },
+    "3": {
+     "index": 3,
      "name": "Setup",
      "parameters": [
       "-",
@@ -12318,6 +13853,21 @@
    "obj-breath": [
     "Breath",
     "Breath",
+    0
+   ],
+   "obj-sdepth": [
+    "Slide Depth",
+    "S Depth",
+    0
+   ],
+   "obj-srel": [
+    "Slide Release",
+    "S Rel",
+    0
+   ],
+   "obj-scrv": [
+    "Slide Curve",
+    "S Curve",
     0
    ]
   },

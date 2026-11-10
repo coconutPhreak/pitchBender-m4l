@@ -32,10 +32,14 @@ Push banks, in encoder order.
 | Pitch | D Curve | −100 to +100 | 0 | Decay shape, like A Curve. |
 | Perform | Velocity | 1–127 | 100 | Velocity of the device's note. |
 | Perform | Envelope | Off / On | On | Pitch envelope on or off (p-lock it so only some steps slide). |
-| Perform | Slide | 0–127 | 64 | Per-note MPE Slide (CC74). Map it in the instrument. |
+| Perform | Slide | 0–127 | 64 | Per-note MPE Slide (CC74), e.g. mapped to cutoff in the instrument. With S Depth 0 it's a static value; otherwise it's where the Slide envelope ends (its offset). Also on bank Slide Env. |
 | Perform | Pressure | 0–127 | 0 | Per-note MPE Pressure. Map it in the instrument. |
 | Perform | Breath | 0–127 | 0 | Breath Controller (CC2) on the MPE master channel, sent with each note. Map it in the instrument. A ringing release tail takes the next note's value. |
 | Perform | Bend Amt | 0–100 % | 100 % | Scales incoming pitch bend (touch strip, clip, earlier device) before it passes through. |
+| Slide Env | Slide | 0–127 | 64 | Same control as on Perform: the envelope's offset (end value). |
+| Slide Env | S Depth | −127 to +127 | 0 | Envelope depth: each note's Slide starts at Slide + Depth (the starting cutoff) and moves to Slide. Negative = rising. 0 = no envelope. |
+| Slide Env | S Rel | 0–400 % of Length | 100 % | Release time. 100 % lands exactly at the note's end. Above 100 % overshoots: the note ends mid-release and Slide holds where it got to. 0 % = straight to Slide. |
+| Slide Env | S Curve | −100 to +100 | 0 | Release shape: −100 fast drop and slow tail (classic filter decay), 0 straight, +100 slow start and fast end. |
 | Setup | Bend Rng | 1–96 semitones | 48 | Per-note bend range each way. Must match the instrument. |
 | Setup | Scale | Off / On | On | Follow Live's scale (when Live's Scale Mode is on), or use plain semitones. |
 
@@ -45,7 +49,8 @@ A red **CLAMPED** label means the last note's Peak or End went beyond Bend Range
 
 - **P-locks cover their own step only.** Unlocked steps play the knob's value.
 - **Turning a locked knob by hand overrides its locks.** That's how Live handles automation: the locks aren't lost, but they stay silenced until you press **Re-enable Automation** (in Live or on Push).
-- **Values are read when each note starts.** Changing a knob, or the scale, mid-note affects the next note. Slide, Pressure, Breath and Bend Amount are the exceptions: they apply straight away.
+- **Values are read when each note starts.** Changing a knob, or the scale, mid-note affects the next note. Pressure, Breath and Bend Amount are the exceptions: they apply straight away. (Slide is per note since v7, so its envelope can't be overridden mid-note.)
+- **Set the instrument to poly (2+ voices).** PitchBender already plays one note at a time; extra voices let a note's release tail ring at its own pitch and Slide while the next note starts. In mono mode the instrument reuses one voice for overlapping notes and can keep the old note's Slide and Pressure.
 - **Avoid p-locking Bend Range and Scale.** They're setup values, automatable only because Push can't show them otherwise.
 - **Place it directly on the track,** not inside a rack, so stopping a clip ends the device's note.
 
@@ -75,3 +80,4 @@ Test each stage on Push 3 Standalone before you start the next. Each stage has a
 - Instruments: MPE only (decided 2026-11-10; see docs/mpe-probe.md)
 - Bend Amount kept: it scales incoming master-channel bend (decided 2026-11-10)
 - Breath (CC2) added beside Pressure, on the master channel because MPE has no per-note CC2 (2026-11-10)
+- Slide release envelope (v7, 2026-11-10): S Depth, S Rel (up to 400 %, cut off at the note's end), S Curve; Slide is its offset and now per note
