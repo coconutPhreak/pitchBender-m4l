@@ -53,6 +53,7 @@ A red **CLAMPED** label means the last note's Peak or End went beyond Bend Range
 - **Set the instrument to poly (2+ voices).** PitchBender already plays one note at a time; extra voices let a note's release tail ring at its own pitch and Slide while the next note starts. In mono mode the instrument reuses one voice for overlapping notes and can keep the old note's Slide and Pressure.
 - **Avoid p-locking Bend Range and Scale.** They're setup values, automatable only because Push can't show them otherwise.
 - **Place it directly on the track,** not inside a rack, so stopping a clip ends the device's note.
+- **CPU is light** on Push 3 Standalone in our tests, but it hasn't been tested alongside many other devices. If you see big CPU spikes with PitchBender in a Set, please [open an issue](https://github.com/coconutPhreak/pitchBender-m4l/issues).
 
 ## Develop
 
@@ -71,7 +72,7 @@ Test each stage on Push 3 Standalone before you start the next. Each stage has a
 - [x] Stage 5 (#5): scale awareness (Live API scale reads work in standalone)
 - [x] Stage 6 (#6): incoming bend with MPE (master channel) and Bend Amount
 - [x] Stage 7 (#7): Slide and Pressure (per-note MPE)
-- [ ] Stage 8 (#8): CPU check on Push with the full device and a bass instrument running
+- [x] Stage 8 (#8): CPU check on Push with the full device and a bass instrument running
 
 ## Decisions
 

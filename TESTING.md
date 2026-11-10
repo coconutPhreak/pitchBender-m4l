@@ -171,11 +171,11 @@ Per-note MPE Slide (CC74) and Pressure, on bank Perform encoders 3 and 4 (Breath
 
 ## Stage 8: CPU on Push ([#8](https://github.com/coconutPhreak/pitchBender-m4l/issues/8))
 
-- **S8.1 Busy pattern:** Push 3 Standalone, Meld with a rich patch, placeholders on every 1/16 step at 140 BPM, Length 1/16, Peak +12, End 0, Attack 30 %, Decay 50 %, curves ±50, Scale on, Slide p-locked on a few steps. Let it run 2 minutes: no dropouts, clicks or stuck notes. Note Push's CPU meter with and without the device.
+- **S8.1 Busy pattern:** Push 3 Standalone, Meld with a rich patch, placeholders on every 1/16 step at 140 BPM, Length 1/16, Peak +12, End 0, Attack 30 %, Decay 50 %, curves ±50, Scale on, Slide p-locked on a few steps. Let it run 2 minutes: no dropouts, clicks or stuck notes. Push 3 Standalone has no CPU meter, so listen; for numbers, run the same Set in Live on a computer and compare its CPU meter (top right) and the Mixer's per-track Performance Impact with the device on and off.
 - **S8.2 Fast notes:** the same at 1/32 placeholders and Length 0.750 (each note's envelope finishes before the next).
 - **S8.3 Long glides:** Length 32.0, Attack 100 %, while the touch strip moves: smooth, no extra CPU spikes.
-- **S8.4 Load time:** load the device on a fresh Push standalone track: it appears in a few seconds and its banks show (Pitch, Perform, Setup).
-- **S8.5 Two instances:** two tracks, each with PitchBender and Meld, both running S8.1. Note the CPU meter.
+- **S8.4 Load time:** load the device on a fresh Push standalone track: it appears in a few seconds and its banks show (Pitch, Perform, Slide Env, Setup).
+- **S8.5 Two instances:** two tracks, each with PitchBender and Meld, both running S8.1: still no dropouts.
 
 ## Push 3
 
