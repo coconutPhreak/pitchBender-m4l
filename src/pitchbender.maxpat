@@ -18,7 +18,7 @@
   "openrect": [
    0.0,
    0.0,
-   356.0,
+   506.0,
    169.0
   ],
   "bglocked": 0,
@@ -38,7 +38,7 @@
   "boxanimatetime": 500,
   "enablehscroll": 1,
   "enablevscroll": 1,
-  "devicewidth": 356.0,
+  "devicewidth": 506.0,
   "description": "Mono pitch-envelope MIDI effect for bass lines, with per-note MPE output.",
   "digest": "",
   "tags": "",
@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v5.1 (Stage 5, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v6 (Stages 6-7, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -106,7 +106,7 @@
     "box": {
      "id": "parse",
      "maxclass": "newobj",
-     "text": "midiparse",
+     "text": "midiparse @hires 1",
      "numinlets": 1,
      "numoutlets": 7,
      "outlettype": [
@@ -132,7 +132,7 @@
     "box": {
      "id": "format",
      "maxclass": "newobj",
-     "text": "midiformat",
+     "text": "midiformat @hires 1",
      "numinlets": 7,
      "numoutlets": 1,
      "outlettype": [
@@ -230,10 +230,12 @@
     "box": {
      "id": "t-trig",
      "maxclass": "newobj",
-     "text": "t b b b b b",
+     "text": "t b b b b b b b",
      "numinlets": 1,
-     "numoutlets": 5,
+     "numoutlets": 7,
      "outlettype": [
+      "bang",
+      "bang",
       "bang",
       "bang",
       "bang",
@@ -243,7 +245,7 @@
      "patching_rect": [
       20.0,
       210.0,
-      130.0,
+      170.0,
       20.0
      ],
      "fontname": "Arial Bold",
@@ -254,7 +256,7 @@
     "box": {
      "id": "c-trig2",
      "maxclass": "comment",
-     "text": "Right to left: (3) kill the sounding note, (2) Trigger Length: start the note timer and the pitch envelope, whose first bend goes out before the note-on, (1) velocity, (0) Note -> note-on. Parameters are read here, at the trigger (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note.",
+     "text": "Right to left: (6) kill the sounding note, (5) next MPE channel, (4) Trigger Length: note timer and pitch envelope, whose first bend goes out now, (3) Slide, (2) Pressure, (1) velocity, (0) Note -> note-on. Parameters are read here (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -488,7 +490,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v5.1",
+     "text": "PITCHBENDER v6",
      "patching_rect": [
       700.0,
       20.0,
@@ -1814,7 +1816,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v5.1",
+     "text": "loaded v6",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -6311,6 +6313,648 @@
      "fontname": "Arial Bold",
      "fontsize": 10.0
     }
+   },
+   {
+    "box": {
+     "id": "obj-slide",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Slide",
+     "patching_rect": [
+      4200.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      356.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Slide",
+       "parameter_shortname": "Slide",
+       "parameter_type": 1,
+       "parameter_unitstyle": 0,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 127.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        64
+       ],
+       "parameter_annotation_name": "Per-note MPE Slide (CC74) sent with each note; map it in the instrument"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-pressure",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Pressure",
+     "patching_rect": [
+      4260.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      406.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Pressure",
+       "parameter_shortname": "Pressure",
+       "parameter_type": 1,
+       "parameter_unitstyle": 0,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 127.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_annotation_name": "Per-note MPE Pressure sent with each note; map it in the instrument"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-bendamt",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Bend Amount",
+     "patching_rect": [
+      4320.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      456.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Bend Amount",
+       "parameter_shortname": "Bend Amt",
+       "parameter_type": 0,
+       "parameter_unitstyle": 5,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 100.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        100.0
+       ],
+       "parameter_annotation_name": "Scales incoming pitch bend (touch strip, clip, earlier device) before it passes through"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "c-s7",
+     "maxclass": "comment",
+     "text": "11. Slide and Pressure (Stage 7): per-note MPE, sent on the new note's channel after its starting bend and before the note-on (latched at the trigger). Turning either knob also sends the new value at once, on the current note's channel.",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      4200.0,
+      40.0,
+      760.0,
+      34.0
+     ],
+     "linecount": 2,
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-cc-go",
+     "maxclass": "newobj",
+     "text": "t b b b",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      4200.0,
+      240.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-cc-b0",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4200.0,
+      270.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-cc-b1",
+     "maxclass": "newobj",
+     "text": "i 74",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4250.0,
+      270.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-cc-b2",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4300.0,
+      270.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-pr-go",
+     "maxclass": "newobj",
+     "text": "t b b",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      4400.0,
+      240.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-pr-b0",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4400.0,
+      270.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-pr-b1",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4450.0,
+      270.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-ccst",
+     "maxclass": "newobj",
+     "text": "expr 175 + $i1",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      4200.0,
+      200.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-prst",
+     "maxclass": "newobj",
+     "text": "expr 207 + $i1",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      4400.0,
+      200.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-dslide",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      4200.0,
+      120.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-slide",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4200.0,
+      150.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-oslide",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      4200.0,
+      175.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-dpress",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      4400.0,
+      120.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-press",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4400.0,
+      150.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-opress",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      4400.0,
+      175.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "c-s6",
+     "maxclass": "comment",
+     "text": "12. Incoming pitch bend (Stage 6): midiparse/midiformat in 14-bit mode (@hires 1). Bend Amount scales it around centre, live (not latched), before it passes through on its own channel; the instrument adds it to each note's own bend.",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      4600.0,
+      40.0,
+      700.0,
+      34.0
+     ],
+     "linecount": 2,
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-mb",
+     "maxclass": "newobj",
+     "text": "expr max(0, min(16383, int(8192. + ($i1 - 8192) * $f2 / 100. + 0.5)))",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      4600.0,
+      100.0,
+      460.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "c-clamp",
+     "maxclass": "comment",
+     "text": "13. Clamp label: at each trigger, if the latched Peak or End (in semitones) is beyond +/- Bend Range, show CLAMPED.",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      4600.0,
+      160.0,
+      700.0,
+      20.0
+     ],
+     "linecount": 1,
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-clamp",
+     "maxclass": "newobj",
+     "text": "expr (abs($i1) > $f3) + (abs($i2) > $f3) > 0",
+     "numinlets": 3,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      4600.0,
+      190.0,
+      320.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "sel-clamp",
+     "maxclass": "newobj",
+     "text": "sel 0 1",
+     "numinlets": 3,
+     "numoutlets": 3,
+     "outlettype": [
+      "bang",
+      "bang",
+      ""
+     ],
+     "patching_rect": [
+      4600.0,
+      220.0,
+      60.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-unclamp",
+     "maxclass": "message",
+     "text": "set",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      4600.0,
+      250.0,
+      37.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-clamp",
+     "maxclass": "message",
+     "text": "set CLAMPED",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      4660.0,
+      250.0,
+      93.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "lbl-clamp",
+     "maxclass": "comment",
+     "text": "",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      4600.0,
+      280.0,
+      60.0,
+      20.0
+     ],
+     "linecount": 1,
+     "fontname": "Arial Bold",
+     "fontsize": 10.0,
+     "presentation": 1,
+     "presentation_rect": [
+      356.0,
+      113.0,
+      70.0,
+      18.0
+     ],
+     "textcolor": [
+      0.9,
+      0.3,
+      0.2,
+      1.0
+     ]
+    }
+   },
+   {
+    "box": {
+     "id": "t-init3",
+     "maxclass": "newobj",
+     "text": "t b b b",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      4800.0,
+      340.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
    }
   ],
   "lines": [
@@ -6371,18 +7015,6 @@
      "destination": [
       "format",
       4
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "parse",
-      5
-     ],
-     "destination": [
-      "format",
-      5
      ]
     }
    },
@@ -6582,7 +7214,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      4
+      6
      ],
      "destination": [
       "t-kill",
@@ -7314,7 +7946,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      2
+      4
      ],
      "destination": [
       "i-len",
@@ -8358,7 +8990,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      3
+      5
      ],
      "destination": [
       "i-chn",
@@ -10621,6 +11253,546 @@
       0
      ]
     }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-cc-go",
+      2
+     ],
+     "destination": [
+      "s-cc-b0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-cc-b0",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-cc-go",
+      1
+     ],
+     "destination": [
+      "s-cc-b1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-cc-b1",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-cc-go",
+      0
+     ],
+     "destination": [
+      "s-cc-b2",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-cc-b2",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-pr-go",
+      1
+     ],
+     "destination": [
+      "s-pr-b0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-pr-b0",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-pr-go",
+      0
+     ],
+     "destination": [
+      "s-pr-b1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-pr-b1",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-chn",
+      0
+     ],
+     "destination": [
+      "expr-ccst",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-ch1",
+      0
+     ],
+     "destination": [
+      "expr-ccst",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-ccst",
+      0
+     ],
+     "destination": [
+      "s-cc-b0",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-chn",
+      0
+     ],
+     "destination": [
+      "expr-prst",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-ch1",
+      0
+     ],
+     "destination": [
+      "expr-prst",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-prst",
+      0
+     ],
+     "destination": [
+      "s-pr-b0",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-slide",
+      0
+     ],
+     "destination": [
+      "t-dslide",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-dslide",
+      1
+     ],
+     "destination": [
+      "i-slide",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-dslide",
+      0
+     ],
+     "destination": [
+      "i-slide",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-trig",
+      3
+     ],
+     "destination": [
+      "i-slide",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-slide",
+      0
+     ],
+     "destination": [
+      "t-oslide",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-oslide",
+      1
+     ],
+     "destination": [
+      "s-cc-b2",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-oslide",
+      0
+     ],
+     "destination": [
+      "s-cc-go",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-pressure",
+      0
+     ],
+     "destination": [
+      "t-dpress",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-dpress",
+      1
+     ],
+     "destination": [
+      "i-press",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-dpress",
+      0
+     ],
+     "destination": [
+      "i-press",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-trig",
+      2
+     ],
+     "destination": [
+      "i-press",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-press",
+      0
+     ],
+     "destination": [
+      "t-opress",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-opress",
+      1
+     ],
+     "destination": [
+      "s-pr-b1",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-opress",
+      0
+     ],
+     "destination": [
+      "s-pr-go",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "parse",
+      5
+     ],
+     "destination": [
+      "expr-mb",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-bendamt",
+      0
+     ],
+     "destination": [
+      "expr-mb",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-mb",
+      0
+     ],
+     "destination": [
+      "format",
+      5
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-oend",
+      1
+     ],
+     "destination": [
+      "expr-clamp",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-opeak",
+      1
+     ],
+     "destination": [
+      "expr-clamp",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-H",
+      0
+     ],
+     "destination": [
+      "expr-clamp",
+      2
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-clamp",
+      0
+     ],
+     "destination": [
+      "sel-clamp",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "sel-clamp",
+      0
+     ],
+     "destination": [
+      "m-unclamp",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "sel-clamp",
+      1
+     ],
+     "destination": [
+      "m-clamp",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-unclamp",
+      0
+     ],
+     "destination": [
+      "lbl-clamp",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-clamp",
+      0
+     ],
+     "destination": [
+      "lbl-clamp",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "thisdev",
+      0
+     ],
+     "destination": [
+      "t-init3",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init3",
+      2
+     ],
+     "destination": [
+      "obj-bendamt",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init3",
+      1
+     ],
+     "destination": [
+      "obj-slide",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init3",
+      0
+     ],
+     "destination": [
+      "obj-pressure",
+      0
+     ]
+    }
    }
   ],
   "parameters": {
@@ -10660,9 +11832,9 @@
      "parameters": [
       "Velocity",
       "Envelope",
-      "-",
-      "-",
-      "-",
+      "Slide",
+      "Pressure",
+      "Bend Amount",
       "-",
       "-",
       "-"
@@ -10727,6 +11899,21 @@
    "obj-scale": [
     "Scale",
     "Scale",
+    0
+   ],
+   "obj-slide": [
+    "Slide",
+    "Slide",
+    0
+   ],
+   "obj-pressure": [
+    "Pressure",
+    "Pressure",
+    0
+   ],
+   "obj-bendamt": [
+    "Bend Amount",
+    "Bend Amt",
     0
    ]
   },

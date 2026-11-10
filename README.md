@@ -1,28 +1,58 @@
 # pitchBender-m4l
 
-A mono Max for Live MIDI effect for bass lines. Each placeholder note in a clip triggers the device, which plays its own note and can add a two-stage pitch-bend envelope and per-note Slide and Pressure, with per-note MPE output (needs an MPE instrument such as Meld). You can p-lock every value per step from Push 3, and the device must run in **Push 3 Standalone**.
+A mono Max for Live MIDI effect for bass lines. Each placeholder note in a clip triggers the device, which plays its own note with a two-stage pitch-bend envelope (slides, drops and 303-style glides) plus per-note Slide and Pressure. Every value can be p-locked per step from Push 3, and the device runs in **Push 3 Standalone**. Its output is per-note **MPE**, so each note keeps its own pitch through its release tail.
 
-- **Device type:** Max for Live MIDI Effect (`.amxd`). Put it before an MPE instrument whose per-note bend range matches the device's Bend Range.
-- **Mono only:** notes never overlap.
-- **Scale-aware:** pitch values follow the Live 12 project scale. A switch turns this off so values are plain semitones.
-- **Standard Max objects only:** no externals.
+- **Device type:** Max for Live MIDI Effect (`.amxd`), MPE-enabled.
+- **Instrument:** an MPE instrument after the device: Meld, Drift, Wavetable, or a plug-in in MPE mode. Its per-note pitch-bend range must match the device's **Bend Range** (default 48). Non-MPE instruments (e.g. Operator) won't follow the pitch envelope.
+- **Mono:** one note at a time. The device ignores the placeholder's pitch, length and velocity and plays its own.
+- **Scale-aware:** with Live 12's Scale Mode on, Note snaps to the project scale, and Peak and End count in scale degrees.
+- **Standard Max objects only:** no externals, no JavaScript.
 
 Full spec: [Pitch Envelope MIDI Effect — Spec](https://claude.ai/artifact/BATfd7L6FMhTEnKPRnYNxy)
 
-## Layout
+## Quick start
 
-- `src/pitchbender.maxpat`: patcher source (JSON)
-- `scripts/build_amxd.py`: builds `build/PitchBender.amxd` from the source and checks it before building
-- `TESTING.md`: how to build, load and test each stage
-- `docs/`: notes and hardware test logs
+1. Put PitchBender on a MIDI track, then an MPE instrument such as Meld after it. Check that the instrument's per-note bend range matches Bend Range (48).
+2. Make a clip with notes wherever you want the bass to play. Their pitch doesn't matter: each one triggers the device's Note.
+3. Set Note, Length and the envelope. On Push, hold a step and turn an encoder to p-lock that step (for example, Peak +7 for a slide up a fifth on one note).
 
-## Build
+## Controls
 
-```bash
-python3 scripts/build_amxd.py
-```
+Push banks, in encoder order.
 
-Then drag `build/PitchBender.amxd` onto a MIDI track, before the instrument. See `TESTING.md`.
+| Bank | Control | Range | Default | What it does |
+|---|---|---|---|---|
+| Pitch | Note | MIDI note | C1 | The note played on each trigger. Snaps down to the scale when Scale is on. |
+| Pitch | Length | 1/64 (0.25 step) to 32 steps | 1/16 (1 step) | How long the note lasts, synced to tempo. |
+| Pitch | Attack | 0–100 % of Length | 20 % | Time from the note-on to Peak. |
+| Pitch | Peak | ±24 | 0 | Where the attack goes, in scale degrees from Note (semitones with Scale off). The label shows the target note. |
+| Pitch | A Curve | −100 to +100 | 0 | Attack shape: −100 fast start, 0 straight, +100 slow start with a fast snap (the classic slide). |
+| Pitch | Decay | 0–100 % of Length | 30 % | Time from Peak to End. Attack and Decay shrink to fit if they add up to more than 100 %. |
+| Pitch | End | ±24 | 0 | Where the pitch settles and holds, through the note's release, until the next note. |
+| Pitch | D Curve | −100 to +100 | 0 | Decay shape, like A Curve. |
+| Perform | Velocity | 1–127 | 100 | Velocity of the device's note. |
+| Perform | Envelope | Off / On | On | Pitch envelope on or off (p-lock it so only some steps slide). |
+| Perform | Slide | 0–127 | 64 | Per-note MPE Slide (CC74). Map it in the instrument. |
+| Perform | Pressure | 0–127 | 0 | Per-note MPE Pressure. Map it in the instrument. |
+| Perform | Bend Amt | 0–100 % | 100 % | Scales incoming pitch bend (touch strip, clip, earlier device) before it passes through. |
+| Setup | Bend Rng | 1–96 semitones | 48 | Per-note bend range each way. Must match the instrument. |
+| Setup | Scale | Off / On | On | Follow Live's scale (when Live's Scale Mode is on), or use plain semitones. |
+
+A red **CLAMPED** label means the last note's Peak or End went beyond Bend Range, so its pitch stopped at the range limit.
+
+## Good to know
+
+- **P-locks cover their own step only.** Unlocked steps play the knob's value.
+- **Turning a locked knob by hand overrides its locks.** That's how Live handles automation: the locks aren't lost, but they stay silenced until you press **Re-enable Automation** (in Live or on Push).
+- **Values are read when each note starts.** Changing a knob, or the scale, mid-note affects the next note. Slide, Pressure and Bend Amount are the exceptions: they apply straight away.
+- **Avoid p-locking Bend Range and Scale.** They're setup values, automatable only because Push can't show them otherwise.
+- **Place it directly on the track,** not inside a rack, so stopping a clip ends the device's note.
+
+## Develop
+
+- `src/pitchbender.maxpat`: patcher source (JSON). `python3 scripts/build_amxd.py` checks it (wiring, Push banks, object classes that have passed the Push standalone probes) and builds `build/PitchBender.amxd`. `--extract` brings device-editor edits back into `src/`.
+- `src/probes/`: probe devices (the MPE probe).
+- `TESTING.md`: how to load and test every stage. `docs/`: test results and decisions.
 
 ## Build order
 
@@ -31,14 +61,15 @@ Test each stage on Push 3 Standalone before you start the next. Each stage has a
 - [x] Stage 1 (#1): swallow the placeholder note, send Note for Trigger Length, prevent stuck notes
 - [x] Stage 2 (#2): p-lock latch test (no deferral needed)
 - [x] Stage 3 (#3): a step p-lock covers only its own step (see docs/plock-scope.md)
-- [x] Stage 4 (#4): envelope (Attack, Peak, Decay, End, curves) as pitch bend, in semitones only
-- [x] Stage 5 (#5): scale awareness (check that Live API scale reads work in standalone)
+- [x] Stage 4 (#4): envelope (Attack, Peak, Decay, End, curves) as pitch bend, per-note MPE
+- [x] Stage 5 (#5): scale awareness (Live API scale reads work in standalone)
 - [ ] Stage 6 (#6): incoming bend with MPE (master channel) and Bend Amount
 - [ ] Stage 7 (#7): Slide and Pressure (per-note MPE)
 - [ ] Stage 8 (#8): CPU check on Push with the full device and a bass instrument running
 
-## Open questions
+## Decisions
 
-- [x] Trigger Length values: 0.25–8 steps in 0.25s, 8–16 in 0.5s, 16–32 in 1s (64 values, built in v5.1; see docs/trigger-length.md)
-- [x] Bend Range default: 48 each way (MPE per-note standard)
-- [x] Instruments: MPE only (decided 2026-11-10, see docs/mpe-probe.md)
+- Trigger Length: 0.25–8 steps in 0.25s, 8–16 in 0.5s, 16–32 in 1s (64 values; see docs/trigger-length.md)
+- Bend Range default: 48 each way (MPE per-note standard)
+- Instruments: MPE only (decided 2026-11-10; see docs/mpe-probe.md)
+- Bend Amount kept: it scales incoming master-channel bend (decided 2026-11-10)
