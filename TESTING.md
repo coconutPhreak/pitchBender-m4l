@@ -11,10 +11,10 @@ This file covers building the device, loading it in Live and on Push, and the ch
    ```
 
    This writes `build/PitchBender.amxd`. The build refuses to run if a patch cord points at a missing box or inlet, if a Push bank names an unknown parameter, or if an object class hasn't passed the Push standalone probes.
-2. In Live, make a MIDI track and load a bass instrument on it (Operator or Drift is fine).
+2. In Live, make a MIDI track and load an **MPE** bass instrument on it (Meld, Drift, Wavetable, or an MPE plug-in in MPE mode). Since v4.1 the device's output is per-note MPE, so non-MPE instruments (e.g. Operator) won't follow the pitch envelope.
 3. Drag `build/PitchBender.amxd` onto the track, *before* the instrument. Put it directly on the track, not inside a rack, because the clip-stop check watches the track's clip slots.
 4. The device should show Note (C1), Velocity (100), Length (1 step), Attack (20 %), Peak (0 st), A Curve (0), Decay (30 %), End (0 st), D Curve (0), Envelope (On) and Bend Rng (48 st).
-5. Set the instrument's pitch-bend range to half of Bend Range in each direction (48 → ±24), or every pitch lands off. In Meld, that's its pitch-bend range setting.
+5. Bend Range is the MPE per-note bend range **each way** (default 48, the MPE standard). It must match the instrument's per-note (MPE) bend range, or every pitch lands off.
 
 After every rebuild, drag the new `PitchBender.amxd` in again to replace the old one.
 
@@ -32,7 +32,7 @@ In the device editor (patching view), turn on the **Debug** toggle (right side, 
 
 - `pitchbender: note P V` for each note-on the device sends
 - `pitchbender: note P 0` for each note-off
-- `pitchbender: bend N` for each pitch-bend value sent (since v4): 8192 is centre, 16383 is +Bend Range/2, 1 is −Bend Range/2. Only changes are sent, so a held pitch prints nothing.
+- `pitchbender: bend N` for each pitch-bend value sent (since v4): 8192 is centre, 16383 is +Bend Range, 1 is −Bend Range. Each note sends its starting bend on its own channel; after that only changes are sent, so a held pitch prints nothing.
 - `pitchbender: timer_ticks N` (transport playing) or `pitchbender: timer_ms N` (stopped): the Trigger Length timer for that note
 - `pitchbender: end timer` when the timer ends a note, and `pitchbender: end kill` at each new trigger, transport stop, clip stop or device off. A note-off right after `end kill` means the note was cut, not timed out.
 
@@ -40,7 +40,7 @@ Paste the console output back, along with any red error lines that appear when t
 
 ## Load check (do this first)
 
-- **L1:** Load the device. The Max console prints `pitchbender: loaded v4` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
+- **L1:** Load the device. The Max console prints `pitchbender: loaded v4.1` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 
@@ -95,31 +95,33 @@ Stage 3 is done once each question has an answer in docs/plock-scope.md. If lock
 
 ## Stage 4: pitch envelope as pitch bend ([#4](https://github.com/coconutPhreak/pitchBender-m4l/issues/4))
 
-The envelope goes 0 → Peak over Attack, then Peak → End over Decay, then holds End until the next trigger. Times are % of Trigger Length. Pitches are in semitones for now; scale degrees come in Stage 5. The device sends the starting bend before each note-on. Incoming pitch bend still passes through raw (merging it is Stage 6), so don't touch the pitch wheel during these tests.
+The envelope goes 0 → Peak over Attack, then Peak → End over Decay, then holds End until the next trigger. Times are % of Trigger Length. Pitches are in semitones for now; scale degrees come in Stage 5. The device sends the starting bend before each note-on. Incoming pitch bend passes through on its own (master) channel, so the instrument adds it on top of each note's bend.
 
-Setup: placeholder notes every 4 steps, Length 4 steps (500 ms at 120 BPM), Bend Range 48 with the instrument at ±24. Use a sustained sound so the pitch movement is easy to hear. Debug on for the first few tests.
+Since v4.1 each note plays on its own MPE member channel (2–16, rotating) and carries its own pitch bend. Setup: placeholder notes every 4 steps, Length 4 steps (500 ms at 120 BPM), Bend Range 48 with the instrument's per-note range at 48. Use a sustained sound so the pitch movement is easy to hear. Debug on for the first few tests.
 
-- **S4.1 Defaults are flat:** with Peak 0 and End 0, there's no audible bend. The console shows at most one `bend 8192` after loading.
+- **S4.1 Defaults are flat:** with Peak 0 and End 0, there's no audible bend. The console shows one `bend 8192` per note (its starting bend) and nothing else.
 - **S4.2 Rise and fall:** Peak +12, End 0, Attack 20 %, Decay 30 %. Each note rises an octave over the first 100 ms, falls back over the next 150 ms, then holds at Note.
 - **S4.3 Rise and hold:** Peak +12, End +12, Attack 50 %, Decay 0 %. Each note rises an octave over 250 ms and stays there.
 - **S4.4 Downward:** Peak −12, End −5. The pitch dips an octave, then settles a fourth below Note.
 - **S4.5 Curves:** with S4.2's settings, A Curve +100 gives a slow start and a fast snap into Peak (the classic slide), and −100 a fast start and a slow settle. D Curve does the same for the decay. 0 is a straight glide.
 - **S4.6 Over 100 %:** Attack 80 %, Decay 80 %. Both shrink to fit, so the note reaches Peak at the halfway point and End exactly at the note-off.
 - **S4.7 Zero stages:** Attack 0 % starts the note at Peak, with no slide up. Decay 0 % jumps from Peak straight to End. Both at 0 % play the note at End from the start.
-- **S4.8 Envelope Off:** turn Envelope off. Notes play at Note with no bend. If the previous note held a non-zero End, the next note still starts back at Note (one `bend 8192`).
+- **S4.8 Envelope Off:** turn Envelope off. Notes play at Note with no bend. If the previous note held a non-zero End, the next note still plays at Note (one `bend 8192` on its own channel), while the previous note's release tail keeps its End pitch.
 - **S4.9 Hold after note-off:** End +7 and a sound with a long release. The release tail stays at +7 until the next trigger.
-- **S4.10 Pitch accuracy:** Peak +12, End +12. The held pitch is exactly an octave above Note (check against a reference or a tuner). Then Bend Range 24 with the instrument at ±12: still exactly an octave.
-- **S4.11 Clamping:** Bend Range 24 (instrument ±12) and Peak +24. The pitch stops at +12 (flat top) instead of going further. The visible "clamped" indicator comes in Stage 6.
+- **S4.10 Pitch accuracy:** Peak +12, End +12. The held pitch is exactly an octave above Note (check against a reference or a tuner). Then Bend Range 24 with the instrument's per-note range at 24: still exactly an octave.
+- **S4.11 Clamping:** Bend Range 12 (instrument per-note range 12) and Peak +24. The pitch stops at +12 (flat top) instead of going further. The visible "clamped" indicator comes in Stage 6.
 - **S4.12 Tempo and transport:** the envelope follows tempo (60 vs 180 BPM). With the transport stopped, notes played from the keyboard still glide, timed at the current tempo.
 - **S4.13 Transport stop:** stop mid-glide. The note ends and the console shows `bend 8192` (back to centre).
 - **S4.14 P-locks:** p-lock Peak +12 on one step only. That step slides and the others don't. Do the same for Envelope (Off on one step).
 - **S4.15 Smoothness:** a slow glide (Length 16 steps, Peak +12, Attack 100 %) sounds smooth, with no stepping.
+- **S4.16 Release tails (MPE):** a sound with a long release (about 1 s), placeholders every 2 steps, Length 1 step. Alternate End between +7 and 0 with p-locks on every other step. Each note's tail keeps its own End pitch while the next note plays; nothing jumps.
+- **S4.17 Master bend:** move Push's touch strip while notes play. All notes bend on top of their envelope. (Merging and Bend Amount get reworked in Stage 6.)
 
 ## Push 3
 
 - **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Length, Attack, Peak, A Curve, Decay, End and D Curve on encoders 1–8. Bank **Perform** shows Velocity and Envelope on encoders 1–2. Bank **Setup** shows Bend Rng on encoder 3 (it's set to not be automatable; check it still appears on Push).
 - **P1a Stage 1 on Push:** repeat S1.1, S1.3, S1.5 and S1.6 on Push standalone with a step-sequenced clip.
-- **P1b Stage 4 on Push:** repeat S4.2, S4.5, S4.14 and S4.15 on Push standalone. Also play fast notes (1/16 placeholders, Length 1 step, Peak +12, Attack 50 %) on a bass instrument and check that Push's CPU meter stays reasonable and nothing glitches.
+- **P1b Stage 4 on Push:** repeat S4.2, S4.5, S4.14, S4.15 and S4.16 on Push standalone. Also play fast notes (1/16 placeholders, Length 1 step, Peak +12, Attack 50 %) on a bass instrument and check that Push's CPU meter stays reasonable and nothing glitches.
 
 ### If Push standalone says "This device contains missing or incompatible Max objects"
 

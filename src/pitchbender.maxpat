@@ -39,7 +39,7 @@
   "enablehscroll": 1,
   "enablevscroll": 1,
   "devicewidth": 356.0,
-  "description": "Mono pitch-envelope MIDI effect for bass lines (Stage 1: note trigger and stuck-note safety).",
+  "description": "Mono pitch-envelope MIDI effect for bass lines, with per-note MPE output.",
   "digest": "",
   "tags": "",
   "style": "",
@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v4 (Stage 4): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v4.1 (Stage 4, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -230,10 +230,11 @@
     "box": {
      "id": "t-trig",
      "maxclass": "newobj",
-     "text": "t b b b b",
+     "text": "t b b b b b",
      "numinlets": 1,
-     "numoutlets": 4,
+     "numoutlets": 5,
      "outlettype": [
+      "bang",
       "bang",
       "bang",
       "bang",
@@ -242,7 +243,7 @@
      "patching_rect": [
       20.0,
       210.0,
-      110.0,
+      130.0,
       20.0
      ],
      "fontname": "Arial Bold",
@@ -433,7 +434,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v4",
+     "text": "PITCHBENDER v4.1",
      "patching_rect": [
       700.0,
       20.0,
@@ -1435,7 +1436,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v4",
+     "text": "loaded v4.1",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -1870,13 +1871,13 @@
        "parameter_shortname": "Bend Rng",
        "parameter_type": 1,
        "parameter_unitstyle": 7,
-       "parameter_mmin": 2.0,
+       "parameter_mmin": 1.0,
        "parameter_mmax": 96.0,
        "parameter_initial_enable": 1,
        "parameter_initial": [
         48
        ],
-       "parameter_annotation_name": "Total pitch-bend span in semitones (48 = +/-24). Set the instrument's bend range to match.",
+       "parameter_annotation_name": "Per-note pitch-bend range each way, in semitones (MPE standard 48). Must match the instrument's MPE bend range.",
        "parameter_invisible": 1
       }
      }
@@ -2323,7 +2324,7 @@
     "box": {
      "id": "expr-H",
      "maxclass": "newobj",
-     "text": "expr max($i1, 2) / 2.",
+     "text": "expr max($i1, 1)",
      "numinlets": 1,
      "numoutlets": 1,
      "outlettype": [
@@ -2731,7 +2732,7 @@
     "box": {
      "id": "c-bend",
      "maxclass": "comment",
-     "text": "8. Bend out: semitones -> 14-bit (H = Bend Range / 2, clamped to +/-H), sent only when it changes, as raw bytes (status, LSB, MSB) straight to midiout, because midiformat's bend inlet is 7-bit. Transport stop resets to centre.",
+     "text": "8. Bend out: semitones -> 14-bit (H = Bend Range (per-note range each way), clamped to +/-H), sent only when it changes, as raw bytes (status, LSB, MSB) straight to midiout, because midiformat's bend inlet is 7-bit. Transport stop resets to centre.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -2933,7 +2934,7 @@
     "box": {
      "id": "m-ch1",
      "maxclass": "message",
-     "text": "1",
+     "text": "2",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -2993,6 +2994,413 @@
       218.0,
       20.0
      ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-chn",
+     "maxclass": "newobj",
+     "text": "i 0",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      200.0,
+      1000.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "plus-chn",
+     "maxclass": "newobj",
+     "text": "+ 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      200.0,
+      1030.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-chn",
+     "maxclass": "newobj",
+     "text": "t i i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      200.0,
+      1060.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-chn",
+     "maxclass": "newobj",
+     "text": "expr ($i1 % 15) + 2",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      200.0,
+      1090.0,
+      145.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-onst",
+     "maxclass": "newobj",
+     "text": "expr 143 + $i1",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      320.0,
+      1120.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-offst",
+     "maxclass": "newobj",
+     "text": "expr 127 + $i1",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      420.0,
+      1120.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-last",
+     "maxclass": "message",
+     "text": "-1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      520.0,
+      1120.0,
+      30.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-on-go",
+     "maxclass": "newobj",
+     "text": "t b b b",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      200.0,
+      1200.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-on-b0",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      200.0,
+      1230.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-on-b1",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      250.0,
+      1230.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-on-b2",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      300.0,
+      1230.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-off-go",
+     "maxclass": "newobj",
+     "text": "t b b b",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      400.0,
+      1200.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-off-b0",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      400.0,
+      1230.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-off-b1",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      450.0,
+      1230.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-off-b2",
+     "maxclass": "newobj",
+     "text": "i 0",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      500.0,
+      1230.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "unp-on",
+     "maxclass": "newobj",
+     "text": "unpack 0 0",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      200.0,
+      1150.0,
+      80.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "unp-off",
+     "maxclass": "newobj",
+     "text": "unpack 0 0",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      400.0,
+      1150.0,
+      80.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-onp",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      300.0,
+      1170.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-offp",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      500.0,
+      1170.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "c-mpe",
+     "maxclass": "comment",
+     "text": "9. MPE (v4.1). Each trigger takes the next member channel (2-16, rotating), so a ringing release tail keeps its own pitch. The device's note-on, note-off and pitch bend go out as raw bytes on that channel; the change filter resets per note so every note sends its starting bend. Everything else (incl. master-channel bend) passes through midiformat on its own channel.",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      200.0,
+      950.0,
+      760.0,
+      48.0
+     ],
+     "linecount": 3,
      "fontname": "Arial Bold",
      "fontsize": 10.0
     }
@@ -3182,18 +3590,6 @@
    {
     "patchline": {
      "source": [
-      "pack-on",
-      0
-     ],
-     "destination": [
-      "format",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
       "i-len",
       0
      ],
@@ -3279,7 +3675,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      3
+      4
      ],
      "destination": [
       "t-kill",
@@ -3403,18 +3799,6 @@
      ],
      "destination": [
       "pack-off",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "pack-off",
-      0
-     ],
-     "destination": [
-      "format",
       0
      ]
     }
@@ -4994,18 +5378,6 @@
    {
     "patchline": {
      "source": [
-      "parse",
-      6
-     ],
-     "destination": [
-      "expr-st",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
       "m-ch1",
       0
      ],
@@ -5158,6 +5530,426 @@
       0
      ]
     }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-trig",
+      3
+     ],
+     "destination": [
+      "i-chn",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-chn",
+      0
+     ],
+     "destination": [
+      "plus-chn",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "plus-chn",
+      0
+     ],
+     "destination": [
+      "t-chn",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-chn",
+      1
+     ],
+     "destination": [
+      "i-chn",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-chn",
+      0
+     ],
+     "destination": [
+      "expr-chn",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-chn",
+      0
+     ],
+     "destination": [
+      "expr-st",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-chn",
+      0
+     ],
+     "destination": [
+      "expr-onst",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-chn",
+      0
+     ],
+     "destination": [
+      "expr-offst",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-ch1",
+      0
+     ],
+     "destination": [
+      "expr-onst",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-ch1",
+      0
+     ],
+     "destination": [
+      "expr-offst",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-chn",
+      0
+     ],
+     "destination": [
+      "m-last",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-last",
+      0
+     ],
+     "destination": [
+      "expr-chg",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-on-go",
+      2
+     ],
+     "destination": [
+      "s-on-b0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-on-b0",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-on-go",
+      1
+     ],
+     "destination": [
+      "s-on-b1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-on-b1",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-on-go",
+      0
+     ],
+     "destination": [
+      "s-on-b2",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-on-b2",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-off-go",
+      2
+     ],
+     "destination": [
+      "s-off-b0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-off-b0",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-off-go",
+      1
+     ],
+     "destination": [
+      "s-off-b1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-off-b1",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-off-go",
+      0
+     ],
+     "destination": [
+      "s-off-b2",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-off-b2",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-onst",
+      0
+     ],
+     "destination": [
+      "s-on-b0",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-offst",
+      0
+     ],
+     "destination": [
+      "s-off-b0",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "pack-on",
+      0
+     ],
+     "destination": [
+      "unp-on",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "pack-off",
+      0
+     ],
+     "destination": [
+      "unp-off",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "unp-on",
+      1
+     ],
+     "destination": [
+      "s-on-b2",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "unp-on",
+      0
+     ],
+     "destination": [
+      "t-onp",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-onp",
+      1
+     ],
+     "destination": [
+      "s-on-b1",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-onp",
+      0
+     ],
+     "destination": [
+      "s-on-go",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "unp-off",
+      0
+     ],
+     "destination": [
+      "t-offp",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-offp",
+      1
+     ],
+     "destination": [
+      "s-off-b1",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-offp",
+      0
+     ],
+     "destination": [
+      "s-off-go",
+      0
+     ]
+    }
    }
   ],
   "parameters": {
@@ -5264,7 +6056,7 @@
   },
   "dependency_cache": [],
   "latency": 0,
-  "is_mpe": 0,
+  "is_mpe": 1,
   "project": {
    "version": 1,
    "creationdate": 3590052786,
