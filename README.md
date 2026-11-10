@@ -11,8 +11,18 @@ Full spec: [Pitch Envelope MIDI Effect — Spec](https://claude.ai/artifact/BATf
 
 ## Layout
 
-- `device/`: the `.amxd` device and its patchers
+- `src/pitchbender.maxpat`: patcher source (JSON)
+- `scripts/build_amxd.py`: builds `build/PitchBender.amxd` from the source and checks it before building
+- `TESTING.md`: how to build, load and test each stage
 - `docs/`: notes and hardware test logs
+
+## Build
+
+```bash
+python3 scripts/build_amxd.py
+```
+
+Then drag `build/PitchBender.amxd` onto a MIDI track, before the instrument. See `TESTING.md`.
 
 ## Build order
 
