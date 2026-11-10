@@ -1,6 +1,6 @@
 # pitchBender-m4l
 
-A mono Max for Live MIDI effect for bass lines. Each placeholder note in a clip triggers the device, which plays its own note with a two-stage pitch-bend envelope (slides, drops and 303-style glides) plus per-note Slide and Pressure. Every value can be p-locked per step from Push 3, and the device runs in **Push 3 Standalone**. Its output is per-note **MPE**, so each note keeps its own pitch through its release tail.
+A mono Max for Live MIDI effect for bass lines. Each placeholder note in a clip triggers the device, which plays its own note with a two-stage pitch-bend envelope (slides, drops and 303-style glides) plus per-note Slide and Pressure and a Breath CC. Every value can be p-locked per step from Push 3, and the device runs in **Push 3 Standalone**. Its output is per-note **MPE**, so each note keeps its own pitch through its release tail.
 
 - **Device type:** Max for Live MIDI Effect (`.amxd`), MPE-enabled.
 - **Instrument:** an MPE instrument after the device: Meld, Drift, Wavetable, or a plug-in in MPE mode. Its per-note pitch-bend range must match the device's **Bend Range** (default 48). Non-MPE instruments (e.g. Operator) won't follow the pitch envelope.
@@ -34,6 +34,7 @@ Push banks, in encoder order.
 | Perform | Envelope | Off / On | On | Pitch envelope on or off (p-lock it so only some steps slide). |
 | Perform | Slide | 0–127 | 64 | Per-note MPE Slide (CC74). Map it in the instrument. |
 | Perform | Pressure | 0–127 | 0 | Per-note MPE Pressure. Map it in the instrument. |
+| Perform | Breath | 0–127 | 0 | Breath Controller (CC2) on the MPE master channel, sent with each note. Map it in the instrument. A ringing release tail takes the next note's value. |
 | Perform | Bend Amt | 0–100 % | 100 % | Scales incoming pitch bend (touch strip, clip, earlier device) before it passes through. |
 | Setup | Bend Rng | 1–96 semitones | 48 | Per-note bend range each way. Must match the instrument. |
 | Setup | Scale | Off / On | On | Follow Live's scale (when Live's Scale Mode is on), or use plain semitones. |
@@ -44,7 +45,7 @@ A red **CLAMPED** label means the last note's Peak or End went beyond Bend Range
 
 - **P-locks cover their own step only.** Unlocked steps play the knob's value.
 - **Turning a locked knob by hand overrides its locks.** That's how Live handles automation: the locks aren't lost, but they stay silenced until you press **Re-enable Automation** (in Live or on Push).
-- **Values are read when each note starts.** Changing a knob, or the scale, mid-note affects the next note. Slide, Pressure and Bend Amount are the exceptions: they apply straight away.
+- **Values are read when each note starts.** Changing a knob, or the scale, mid-note affects the next note. Slide, Pressure, Breath and Bend Amount are the exceptions: they apply straight away.
 - **Avoid p-locking Bend Range and Scale.** They're setup values, automatable only because Push can't show them otherwise.
 - **Place it directly on the track,** not inside a rack, so stopping a clip ends the device's note.
 
@@ -73,3 +74,4 @@ Test each stage on Push 3 Standalone before you start the next. Each stage has a
 - Bend Range default: 48 each way (MPE per-note standard)
 - Instruments: MPE only (decided 2026-11-10; see docs/mpe-probe.md)
 - Bend Amount kept: it scales incoming master-channel bend (decided 2026-11-10)
+- Breath (CC2) added beside Pressure, on the master channel because MPE has no per-note CC2 (2026-11-10)

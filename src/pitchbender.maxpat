@@ -18,7 +18,7 @@
   "openrect": [
    0.0,
    0.0,
-   506.0,
+   556.0,
    169.0
   ],
   "bglocked": 0,
@@ -38,7 +38,7 @@
   "boxanimatetime": 500,
   "enablehscroll": 1,
   "enablevscroll": 1,
-  "devicewidth": 506.0,
+  "devicewidth": 556.0,
   "description": "Mono pitch-envelope MIDI effect for bass lines, with per-note MPE output.",
   "digest": "",
   "tags": "",
@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v6 (Stages 6-7, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v6.1 (Stages 6-7, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -230,10 +230,11 @@
     "box": {
      "id": "t-trig",
      "maxclass": "newobj",
-     "text": "t b b b b b b b",
+     "text": "t b b b b b b b b",
      "numinlets": 1,
-     "numoutlets": 7,
+     "numoutlets": 8,
      "outlettype": [
+      "bang",
       "bang",
       "bang",
       "bang",
@@ -245,7 +246,7 @@
      "patching_rect": [
       20.0,
       210.0,
-      170.0,
+      190.0,
       20.0
      ],
      "fontname": "Arial Bold",
@@ -256,7 +257,7 @@
     "box": {
      "id": "c-trig2",
      "maxclass": "comment",
-     "text": "Right to left: (6) kill the sounding note, (5) next MPE channel, (4) Trigger Length: note timer and pitch envelope, whose first bend goes out now, (3) Slide, (2) Pressure, (1) velocity, (0) Note -> note-on. Parameters are read here (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note.",
+     "text": "Right to left: (7) kill the sounding note, (6) next MPE channel, (5) Trigger Length: note timer and pitch envelope, whose first bend goes out now, (4) Slide, (3) Pressure, (2) Breath, (1) velocity, (0) Note -> note-on. Parameters are read here (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -490,7 +491,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v6",
+     "text": "PITCHBENDER v6.1",
      "patching_rect": [
       700.0,
       20.0,
@@ -1816,7 +1817,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v6",
+     "text": "loaded v6.1",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -6418,7 +6419,7 @@
      ],
      "presentation": 1,
      "presentation_rect": [
-      456.0,
+      506.0,
       22.0,
       44.0,
       47.0
@@ -6938,10 +6939,11 @@
     "box": {
      "id": "t-init3",
      "maxclass": "newobj",
-     "text": "t b b b",
+     "text": "t b b b b",
      "numinlets": 1,
-     "numoutlets": 3,
+     "numoutlets": 4,
      "outlettype": [
+      "bang",
       "bang",
       "bang",
       "bang"
@@ -6952,6 +6954,210 @@
       86.0,
       20.0
      ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "obj-breath",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Breath",
+     "patching_rect": [
+      4800.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      456.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Breath",
+       "parameter_shortname": "Breath",
+       "parameter_type": 1,
+       "parameter_unitstyle": 0,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 127.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_annotation_name": "Breath Controller (CC2) on the MPE master channel, sent with each note; map it in the instrument"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "s-br-go",
+     "maxclass": "newobj",
+     "text": "t b b b",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      4200.0,
+      460.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-br-b0",
+     "maxclass": "newobj",
+     "text": "i 176",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4200.0,
+      490.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-br-b1",
+     "maxclass": "newobj",
+     "text": "i 2",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4250.0,
+      490.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-br-b2",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4300.0,
+      490.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-dbreath",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      4200.0,
+      400.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-breath",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      4200.0,
+      420.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-obreath",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      4200.0,
+      440.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "c-breath",
+     "maxclass": "comment",
+     "text": "14. Breath (CC2) on the MPE master channel (channel 1), latched per trigger and sent after Pressure, before the note-on; turning the knob sends at once. Master channel, not per note: MPE defines only pitch, Slide and Pressure per note.",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      4200.0,
+      360.0,
+      700.0,
+      34.0
+     ],
+     "linecount": 2,
      "fontname": "Arial Bold",
      "fontsize": 10.0
     }
@@ -7214,7 +7420,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      6
+      7
      ],
      "destination": [
       "t-kill",
@@ -7946,7 +8152,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      4
+      5
      ],
      "destination": [
       "i-len",
@@ -8990,7 +9196,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      5
+      6
      ],
      "destination": [
       "i-chn",
@@ -11486,7 +11692,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      3
+      4
      ],
      "destination": [
       "i-slide",
@@ -11570,7 +11776,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      2
+      3
      ],
      "destination": [
       "i-press",
@@ -11762,7 +11968,7 @@
     "patchline": {
      "source": [
       "t-init3",
-      2
+      3
      ],
      "destination": [
       "obj-bendamt",
@@ -11774,7 +11980,7 @@
     "patchline": {
      "source": [
       "t-init3",
-      1
+      2
      ],
      "destination": [
       "obj-slide",
@@ -11786,10 +11992,178 @@
     "patchline": {
      "source": [
       "t-init3",
-      0
+      1
      ],
      "destination": [
       "obj-pressure",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-br-go",
+      2
+     ],
+     "destination": [
+      "s-br-b0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-br-b0",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-br-go",
+      1
+     ],
+     "destination": [
+      "s-br-b1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-br-b1",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-br-go",
+      0
+     ],
+     "destination": [
+      "s-br-b2",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-br-b2",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-breath",
+      0
+     ],
+     "destination": [
+      "t-dbreath",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-dbreath",
+      1
+     ],
+     "destination": [
+      "i-breath",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-dbreath",
+      0
+     ],
+     "destination": [
+      "i-breath",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-trig",
+      2
+     ],
+     "destination": [
+      "i-breath",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-breath",
+      0
+     ],
+     "destination": [
+      "t-obreath",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-obreath",
+      1
+     ],
+     "destination": [
+      "s-br-b2",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-obreath",
+      0
+     ],
+     "destination": [
+      "s-br-go",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init3",
+      0
+     ],
+     "destination": [
+      "obj-breath",
       0
      ]
     }
@@ -11834,8 +12208,8 @@
       "Envelope",
       "Slide",
       "Pressure",
+      "Breath",
       "Bend Amount",
-      "-",
       "-",
       "-"
      ]
@@ -11914,6 +12288,11 @@
    "obj-bendamt": [
     "Bend Amount",
     "Bend Amt",
+    0
+   ],
+   "obj-breath": [
+    "Breath",
+    "Breath",
     0
    ]
   },
