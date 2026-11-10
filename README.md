@@ -16,16 +16,16 @@ Full spec: [Pitch Envelope MIDI Effect — Spec](https://claude.ai/artifact/BATf
 
 ## Build order
 
-Test each stage on Push 3 Standalone before you start the next.
+Test each stage on Push 3 Standalone before you start the next. Each stage has a GitHub issue, closed by the commit that finishes it.
 
-- [ ] Stage 1: swallow the placeholder note, send Note for Trigger Length, prevent stuck notes
-- [ ] Stage 2: p-lock latch test, and tune the deferral
-- [ ] Stage 3: check whether a step p-lock covers only its own step or holds until the next breakpoint
-- [ ] Stage 4: envelope (Attack, Peak, Decay, End, curves) as pitch bend, in semitones only
-- [ ] Stage 5: scale awareness (check that Live API scale reads work in standalone)
-- [ ] Stage 6: incoming bend offset and Bend Amount
-- [ ] Stage 7: CC A and CC B
-- [ ] Stage 8: CPU check on Push with the full device and a bass instrument running
+- [ ] Stage 1 (#1): swallow the placeholder note, send Note for Trigger Length, prevent stuck notes
+- [ ] Stage 2 (#2): p-lock latch test, and tune the deferral
+- [ ] Stage 3 (#3): check whether a step p-lock covers only its own step or holds until the next breakpoint
+- [ ] Stage 4 (#4): envelope (Attack, Peak, Decay, End, curves) as pitch bend, in semitones only
+- [ ] Stage 5 (#5): scale awareness (check that Live API scale reads work in standalone)
+- [ ] Stage 6 (#6): incoming bend offset and Bend Amount
+- [ ] Stage 7 (#7): CC A and CC B
+- [ ] Stage 8 (#8): CPU check on Push with the full device and a bass instrument running
 
 ## Open questions
 
