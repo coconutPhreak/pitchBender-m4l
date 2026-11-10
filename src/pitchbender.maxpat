@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v1 (Stage 1): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v1.1 (Stage 1): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -433,7 +433,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v1",
+     "text": "PITCHBENDER v1.1",
      "patching_rect": [
       700.0,
       20.0,
@@ -1407,6 +1407,105 @@
      "fontname": "Arial Bold",
      "fontsize": 10.0
     }
+   },
+   {
+    "box": {
+     "id": "t-init",
+     "maxclass": "newobj",
+     "text": "t b b b b",
+     "numinlets": 1,
+     "numoutlets": 4,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      960.0,
+      200.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-loaded",
+     "maxclass": "message",
+     "text": "loaded v1.1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1080.0,
+      230.0,
+      80.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "print-load",
+     "maxclass": "newobj",
+     "text": "print pitchbender",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "outlettype": [],
+     "patching_rect": [
+      1080.0,
+      260.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "c-init",
+     "maxclass": "comment",
+     "text": "At load: send every parameter's value into the latches (a 0 velocity would make every note-on a note-off), then print 'loaded'.",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      1180.0,
+      200.0,
+      300.0,
+      34.0
+     ],
+     "linecount": 2,
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-vel",
+     "maxclass": "newobj",
+     "text": "expr max(1, min(127, $i1))",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      300.0,
+      280.0,
+      160.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
    }
   ],
   "lines": [
@@ -1623,18 +1722,6 @@
      "destination": [
       "t-pitch",
       0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "i-vel",
-      0
-     ],
-     "destination": [
-      "pack-on",
-      1
      ]
     }
    },
@@ -2199,6 +2286,102 @@
      "destination": [
       "print",
       0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "thisdev",
+      0
+     ],
+     "destination": [
+      "t-init",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init",
+      3
+     ],
+     "destination": [
+      "obj-length",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init",
+      2
+     ],
+     "destination": [
+      "obj-velocity",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init",
+      1
+     ],
+     "destination": [
+      "obj-note",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init",
+      0
+     ],
+     "destination": [
+      "m-loaded",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-loaded",
+      0
+     ],
+     "destination": [
+      "print-load",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-vel",
+      0
+     ],
+     "destination": [
+      "expr-vel",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-vel",
+      0
+     ],
+     "destination": [
+      "pack-on",
+      1
      ]
     }
    }
