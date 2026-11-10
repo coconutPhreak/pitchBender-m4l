@@ -63,7 +63,7 @@ def check_patch(patcher: dict, where: str = "patcher") -> None:
     targets = {ln["patchline"]["destination"][0] for ln in patcher["lines"]}
     for bid, bx in boxes.items():
         if bx["maxclass"] == "newobj" and bx.get("numoutlets", 0) and bid not in sources \
-                and bx.get("text", "").split(" ")[0] not in ("inlet", "live.banks"):
+                and bx.get("text", "").split(" ")[0] not in ("inlet", "live.banks", "coll"):  # coll: write-only tables are read via a same-named coll
             errs.append(f"{bid} ({bx.get('text')}): output goes nowhere")
         if bx.get("text", "").split(" ")[0] in ("i", "f") and bid in sources and \
                 not any(ln["patchline"]["destination"] == [bid, 0] for ln in patcher["lines"]):

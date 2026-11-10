@@ -13,7 +13,7 @@ This file covers building the device, loading it in Live and on Push, and the ch
    This writes `build/PitchBender.amxd`. The build refuses to run if a patch cord points at a missing box or inlet, if a Push bank names an unknown parameter, or if an object class hasn't passed the Push standalone probes.
 2. In Live, make a MIDI track and load an **MPE** bass instrument on it (Meld, Drift, Wavetable, or an MPE plug-in in MPE mode). Since v4.1 the device's output is per-note MPE, so non-MPE instruments (e.g. Operator) won't follow the pitch envelope.
 3. Drag `build/PitchBender.amxd` onto the track, *before* the instrument. Put it directly on the track, not inside a rack, because the clip-stop check watches the track's clip slots.
-4. The device should show Note (C1), Velocity (100), Length (1 step), Attack (20 %), Peak (0 st), A Curve (0), Decay (30 %), End (0 st), D Curve (0), Envelope (On) and Bend Rng (48 st).
+4. The device should show Note (C1), Velocity (100), Length (1 step), Attack (20 %), Peak (0 st), A Curve (0), Decay (30 %), End (0 st), D Curve (0), Envelope (On), Bend Rng (48 st) and Scale (On). Under Peak and End, small labels show their target note.
 5. Bend Range is the MPE per-note bend range **each way** (default 48, the MPE standard). It must match the instrument's per-note (MPE) bend range, or every pitch lands off.
 
 After every rebuild, drag the new `PitchBender.amxd` in again to replace the old one.
@@ -36,11 +36,13 @@ In the device editor (patching view), turn on the **Debug** toggle (right side, 
 - `pitchbender: timer_ticks N` (transport playing) or `pitchbender: timer_ms N` (stopped): the Trigger Length timer for that note
 - `pitchbender: end timer` when the timer ends a note, and `pitchbender: end kill` at each new trigger, transport stop, clip stop or device off. A note-off right after `end kill` means the note was cut, not timed out.
 
+Always printed (no Debug needed, since v5): `pitchbender: scale_intervals …` and `pitchbender: scale_mode N` as Live reports them, and `pitchbender: scale_notes_root_mask N R M` after each scale change (N = scale notes found in MIDI 0–127, R = root, M = scale mask).
+
 Paste the console output back, along with any red error lines that appear when the device loads.
 
 ## Load check (do this first)
 
-- **L1:** Load the device. The Max console prints `pitchbender: loaded v4.2` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
+- **L1:** Load the device. The Max console prints `pitchbender: loaded v5` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 
@@ -119,9 +121,25 @@ Since v4.1 each note plays on its own MPE member channel (2–16, rotating) and 
 - **S4.16 Release tails (MPE):** a sound with a long release (about 1 s), placeholders every 2 steps, Length 1 step. Alternate End between +7 and 0 with p-locks on every other step. Each note's tail keeps its own End pitch while the next note plays; nothing jumps.
 - **S4.17 Master bend:** move Push's touch strip while notes play. All notes bend on top of their envelope. (Merging and Bend Amount get reworked in Stage 6.)
 
+## Stage 5: scale awareness ([#5](https://github.com/coconutPhreak/pitchBender-m4l/issues/5))
+
+With **Scale** on (bank Setup, encoder 4) and Live's Scale Mode on, Note snaps down to the nearest note of the project scale, and Peak and End are **scale degrees** counted from Note, wrapping octaves. With Scale off, or Live's Scale Mode off, everything is plain semitones as before. Pitch bend still glides continuously between targets; only the targets are in key. The labels under Peak and End show the target note in the device view (Push shows only the number).
+
+Setup: as Stage 4 (placeholders every 4 steps, Length 4 steps, Meld per-note range 48). In Live, turn on Scale Mode and set the project scale to **C Minor**. On load, the console should show `scale_intervals 0 2 3 5 7 8 10`, `scale_mode 1` and `scale_notes_root_mask 75 0 1453`.
+
+- **S5.1 Degrees up and down:** Note C1, Peak +2, End +2, Attack 0 %: the note plays E♭1 (label D#1). Peak +7 → C2 (an octave). Peak −1 → B♭0 (A#0).
+- **S5.2 Snap:** set Note to C#1 (not in C minor). The note plays C1, and the targets count from C1.
+- **S5.3 Glide:** Peak +4 (G1), End 0, Attack 30 %, Decay 30 %. The pitch glides smoothly up to G1 and back, with no stepping through scale notes.
+- **S5.4 Scale change:** switch the project scale to C Major. The console prints a new `scale_notes_root_mask … 0 2741`, and Peak +2 now gives E1. Change the root to D: Peak +2 from D1 gives F#1.
+- **S5.5 Change mid-note:** with Length 16 steps, change the scale while a note glides. The note already playing keeps its targets; the next note uses the new scale.
+- **S5.6 Scale off:** turn Scale off. Note C#1 plays C#1, and Peak +2 is 2 semitones (D#1). Turn it back on, then turn Live's Scale Mode off: also plain semitones (the console shows `scale_mode 0`).
+- **S5.7 Labels:** turning Note, Peak or End, or changing the scale, updates the labels right away, without playing.
+- **S5.8 P-locks:** p-lock Peak +4 on one step in C minor: that step goes to G1, the others don't move.
+- **S5.9 Push standalone:** repeat S5.1, S5.4 and S5.6 on Push 3 Standalone, changing the scale from Push's Scale menu. This is the key test: does the Live API scale reading work in standalone?
+
 ## Push 3
 
-- **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Length, Attack, Peak, A Curve, Decay, End and D Curve on encoders 1–8. Bank **Perform** shows Velocity and Envelope on encoders 1–2. Bank **Setup** shows Bend Rng on encoder 3. The console shows no `parameter ... not found` line.
+- **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Length, Attack, Peak, A Curve, Decay, End and D Curve on encoders 1–8. Bank **Perform** shows Velocity and Envelope on encoders 1–2. Bank **Setup** shows Bend Rng on encoder 3 and Scale on encoder 4. The console shows no `parameter ... not found` line.
 - **P1a Stage 1 on Push:** repeat S1.1, S1.3, S1.5 and S1.6 on Push standalone with a step-sequenced clip.
 - **P1b Stage 4 on Push:** repeat S4.2, S4.5, S4.14, S4.15 and S4.16 on Push standalone. Also play fast notes (1/16 placeholders, Length 1 step, Peak +12, Attack 50 %) on a bass instrument and check that Push's CPU meter stays reasonable and nothing glitches.
 
