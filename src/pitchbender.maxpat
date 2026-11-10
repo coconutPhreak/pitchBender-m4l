@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v2 (Stage 2): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v2.1 (Stage 2): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -253,16 +253,16 @@
     "box": {
      "id": "c-trig2",
      "maxclass": "comment",
-     "text": "Right to left: (3) kill the sounding note, (2) velocity, (1) Note -> note-on, (0) start the Trigger Length timer. Parameters are read here, at the trigger (latched for this note).",
+     "text": "Right to left: (3) kill the sounding note, (2) velocity, (1) Note -> note-on, (0) start the Trigger Length timer. Parameters are read here, at the trigger (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note (Live and Push standalone).",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
       140.0,
       210.0,
       620.0,
-      34.0
+      48.0
      ],
-     "linecount": 2,
+     "linecount": 3,
      "fontname": "Arial Bold",
      "fontsize": 10.0
     }
@@ -433,7 +433,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v2",
+     "text": "PITCHBENDER v2.1",
      "patching_rect": [
       700.0,
       20.0,
@@ -1435,7 +1435,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v2",
+     "text": "loaded v2.1",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -1583,260 +1583,6 @@
       72.0,
       20.0
      ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
-     "id": "obj-latchdelay",
-     "maxclass": "live.menu",
-     "numinlets": 1,
-     "numoutlets": 3,
-     "outlettype": [
-      "",
-      "",
-      "float"
-     ],
-     "parameter_enable": 1,
-     "varname": "Latch Delay",
-     "patching_rect": [
-      1100.0,
-      60.0,
-      70.0,
-      15.0
-     ],
-     "presentation": 1,
-     "presentation_rect": [
-      110.0,
-      76.0,
-      70.0,
-      15.0
-     ],
-     "saved_attribute_attributes": {
-      "valueof": {
-       "parameter_longname": "Latch Delay",
-       "parameter_shortname": "Latch",
-       "parameter_type": 2,
-       "parameter_enum": [
-        "Off",
-        "Next tick",
-        "1 ms",
-        "2 ms",
-        "5 ms",
-        "10 ms"
-       ],
-       "parameter_mmax": 5.0,
-       "parameter_initial_enable": 1,
-       "parameter_initial": [
-        2
-       ],
-       "parameter_annotation_name": "Stage 2 test: wait this long after a placeholder note before reading the parameters, so a step's p-lock has landed"
-      }
-     }
-    }
-   },
-   {
-    "box": {
-     "id": "lbl-latch",
-     "maxclass": "live.comment",
-     "numinlets": 1,
-     "numoutlets": 0,
-     "text": "Latch Delay",
-     "patching_rect": [
-      1100.0,
-      40.0,
-      70.0,
-      18.0
-     ],
-     "presentation": 1,
-     "presentation_rect": [
-      110.0,
-      58.0,
-      70.0,
-      18.0
-     ],
-     "textjustification": 0
-    }
-   },
-   {
-    "box": {
-     "id": "gate-defer",
-     "maxclass": "newobj",
-     "text": "gate 2 1",
-     "numinlets": 2,
-     "numoutlets": 2,
-     "outlettype": [
-      "",
-      ""
-     ],
-     "patching_rect": [
-      460.0,
-      150.0,
-      70.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
-     "id": "dly-defer",
-     "maxclass": "newobj",
-     "text": "delay 1",
-     "numinlets": 2,
-     "numoutlets": 1,
-     "outlettype": [
-      "bang"
-     ],
-     "patching_rect": [
-      540.0,
-      180.0,
-      60.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
-     "id": "t-ld",
-     "maxclass": "newobj",
-     "text": "t i i",
-     "numinlets": 1,
-     "numoutlets": 2,
-     "outlettype": [
-      "int",
-      "int"
-     ],
-     "patching_rect": [
-      1100.0,
-      90.0,
-      50.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
-     "id": "expr-ld",
-     "maxclass": "newobj",
-     "text": "expr ($i1 > 0) + 1",
-     "numinlets": 1,
-     "numoutlets": 1,
-     "outlettype": [
-      ""
-     ],
-     "patching_rect": [
-      1160.0,
-      120.0,
-      120.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
-     "id": "coll-ld",
-     "maxclass": "newobj",
-     "text": "coll ---latch",
-     "numinlets": 1,
-     "numoutlets": 4,
-     "outlettype": [
-      "",
-      "",
-      "",
-      ""
-     ],
-     "patching_rect": [
-      1100.0,
-      150.0,
-      90.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0,
-     "saved_object_attributes": {
-      "embed": 1,
-      "precision": 6
-     },
-     "coll_data": {
-      "count": 5,
-      "data": [
-       {
-        "key": 1,
-        "value": [
-         0
-        ]
-       },
-       {
-        "key": 2,
-        "value": [
-         1
-        ]
-       },
-       {
-        "key": 3,
-        "value": [
-         2
-        ]
-       },
-       {
-        "key": 4,
-        "value": [
-         5
-        ]
-       },
-       {
-        "key": 5,
-        "value": [
-         10
-        ]
-       }
-      ]
-     }
-    }
-   },
-   {
-    "box": {
-     "id": "m-ld",
-     "maxclass": "message",
-     "text": "delaytime $1",
-     "numinlets": 2,
-     "numoutlets": 1,
-     "outlettype": [
-      ""
-     ],
-     "patching_rect": [
-      1100.0,
-      180.0,
-      100.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
-     "id": "c-defer",
-     "maxclass": "comment",
-     "text": "Stage 2 deferral: Latch Delay Off sends the trigger straight on; otherwise a delay (0 ms = next scheduler tick) lets the step's p-lock land before the parameters are read. Kills also cancel a pending trigger.",
-     "numinlets": 1,
-     "numoutlets": 0,
-     "patching_rect": [
-      640.0,
-      140.0,
-      440.0,
-      34.0
-     ],
-     "linecount": 2,
      "fontname": "Arial Bold",
      "fontsize": 10.0
     }
@@ -2822,139 +2568,7 @@
       0
      ],
      "destination": [
-      "gate-defer",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "gate-defer",
-      0
-     ],
-     "destination": [
       "t-trig",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "gate-defer",
-      1
-     ],
-     "destination": [
-      "dly-defer",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "dly-defer",
-      0
-     ],
-     "destination": [
-      "t-trig",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-latchdelay",
-      0
-     ],
-     "destination": [
-      "t-ld",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-ld",
-      1
-     ],
-     "destination": [
-      "expr-ld",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "expr-ld",
-      0
-     ],
-     "destination": [
-      "gate-defer",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-ld",
-      0
-     ],
-     "destination": [
-      "coll-ld",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "coll-ld",
-      0
-     ],
-     "destination": [
-      "m-ld",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "m-ld",
-      0
-     ],
-     "destination": [
-      "dly-defer",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-init",
-      3
-     ],
-     "destination": [
-      "obj-latchdelay",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "m-stop",
-      0
-     ],
-     "destination": [
-      "dly-defer",
       0
      ]
     }
@@ -3004,28 +2618,9 @@
       "-",
       "-"
      ]
-    },
-    "2": {
-     "index": 2,
-     "name": "Setup",
-     "parameters": [
-      "-",
-      "-",
-      "-",
-      "-",
-      "Latch Delay",
-      "-",
-      "-",
-      "-"
-     ]
     }
    },
-   "inherited_shortname": 1,
-   "obj-latchdelay": [
-    "Latch Delay",
-    "Latch",
-    0
-   ]
+   "inherited_shortname": 1
   },
   "dependency_cache": [],
   "latency": 0,
