@@ -1,6 +1,6 @@
 # PitchBender – Max for Live device
 
-A mono Max for Live MIDI effect for bass lines. Each placeholder note triggers the device's own note, plus a two-stage pitch-bend envelope and two static CCs. You can p-lock every value per step from Push 3, and the device must run in Push 3 Standalone. The spec is a Claude Doc: https://claude.ai/artifact/BATfd7L6FMhTEnKPRnYNxy (read it with the Claude Docs connector). If a decision changes, update it there.
+A mono Max for Live MIDI effect for bass lines. Each placeholder note triggers the device's own note, plus a two-stage pitch-bend envelope and per-note Slide and Pressure, with per-note MPE output. You can p-lock every value per step from Push 3, and the device must run in Push 3 Standalone. The spec is a Claude Doc: https://claude.ai/artifact/BATfd7L6FMhTEnKPRnYNxy (read it with the Claude Docs connector). If a decision changes, update it there.
 
 ## Hard constraints
 
