@@ -123,6 +123,8 @@ Since v4.1 each note plays on its own MPE member channel (2–16, rotating) and 
 
 ## Stage 5: scale awareness ([#5](https://github.com/coconutPhreak/pitchBender-m4l/issues/5))
 
+v5 tested in Live and on Push 3 Standalone with Meld on 2026-11-10 (S5.1–S5.9): all pass. The Live API scale reads work in standalone.
+
 With **Scale** on (bank Setup, encoder 4) and Live's Scale Mode on, Note snaps down to the nearest note of the project scale, and Peak and End are **scale degrees** counted from Note, wrapping octaves. With Scale off, or Live's Scale Mode off, everything is plain semitones as before. Pitch bend still glides continuously between targets; only the targets are in key. The labels under Peak and End show the target note in the device view (Push shows only the number).
 
 Setup: as Stage 4 (placeholders every 4 steps, Length 4 steps, Meld per-note range 48). In Live, turn on Scale Mode and set the project scale to **C Minor**. On load, the console should show `scale_intervals 0 2 3 5 7 8 10`, `scale_mode 1` and `scale_notes_root_mask 75 0 1453`.
