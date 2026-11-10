@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+._*
+
+# Max / Max for Live
+*.maxpat.bak
+*.amxd.bak
+*~
+*.autosave
+Max Autosave/
+*_frozen/
+
+# Live
+Backup/
+*.als.bak
+Ableton Project Info/
+
+# Editors
+.vscode/
+.idea/
