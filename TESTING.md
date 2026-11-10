@@ -74,6 +74,21 @@ Re-run these after changes to the trigger path. Setup: a 1-bar clip with a place
 - **S2.5 Timing:** the notes sit on the grid by ear.
 - **S2.6 Fast steps:** at 1/32 placeholders and a high tempo (e.g. 170 BPM), every step still plays and the locks still land.
 
+## Stage 3: p-lock scope on Push ([#3](https://github.com/coconutPhreak/pitchBender-m4l/issues/3))
+
+This tests Push's behaviour, not the device's. The device plays whatever value the automation holds when each step triggers, so the question is: does a Push step p-lock cover **only its own step**, or does it **hold until the next breakpoint**? Write the answers in [docs/plock-scope.md](docs/plock-scope.md).
+
+Setup (Push 3 Standalone): a fresh 1-bar clip with a placeholder note on every step (16 notes, each 1 step long), no automation yet. Note at C1, Length 1 step, Velocity 100. Use Debug in Live via Control Mode if you can; otherwise listen.
+
+- **S3.1 Single lock:** hold step 5 and turn Note to G1. Play two loops. What do steps 1–4 and 6–16 play: C1, or G1?
+- **S3.2 Envelope shape:** open the clip in Live (Control Mode, or copy the Set to the computer) and look at the Note envelope. Is it a step covering only step 5, or a breakpoint that stays at G1?
+- **S3.3 Two locks:** also lock step 9 to A♯1. What do steps 6–8 and 10–16 play?
+- **S3.4 Knob after locking:** with no step held, turn the Note encoder while the clip plays. Do the unlocked steps follow it, and do the locked steps keep their values? Does Live show the parameter as overridden (an automation re-enable button lit)?
+- **S3.5 Other parameters:** lock Velocity and Length on step 13. Same questions as S3.1 for those two.
+- **S3.6 Clearing a lock:** remove step 5's lock (hold step 5 and delete its automation). Does step 5 go back to the unlocked value?
+
+Stage 3 is done once each question has an answer in docs/plock-scope.md. If locks hold until the next breakpoint, a later stage may need to change how the device handles unlocked steps; we'd decide that from the results.
+
 ## Push 3
 
 - **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note and Length on encoders 1–2. Bank **Perform** shows Velocity on encoder 1.
