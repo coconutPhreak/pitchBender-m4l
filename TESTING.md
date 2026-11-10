@@ -40,7 +40,7 @@ Paste the console output back, along with any red error lines that appear when t
 
 ## Load check (do this first)
 
-- **L1:** Load the device. The Max console prints `pitchbender: loaded v4.1` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
+- **L1:** Load the device. The Max console prints `pitchbender: loaded v4.2` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 
@@ -119,7 +119,7 @@ Since v4.1 each note plays on its own MPE member channel (2–16, rotating) and 
 
 ## Push 3
 
-- **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Length, Attack, Peak, A Curve, Decay, End and D Curve on encoders 1–8. Bank **Perform** shows Velocity and Envelope on encoders 1–2. Bank **Setup** shows Bend Rng on encoder 3 (it's set to not be automatable; check it still appears on Push).
+- **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Length, Attack, Peak, A Curve, Decay, End and D Curve on encoders 1–8. Bank **Perform** shows Velocity and Envelope on encoders 1–2. Bank **Setup** shows Bend Rng on encoder 3. The console shows no `parameter ... not found` line.
 - **P1a Stage 1 on Push:** repeat S1.1, S1.3, S1.5 and S1.6 on Push standalone with a step-sequenced clip.
 - **P1b Stage 4 on Push:** repeat S4.2, S4.5, S4.14, S4.15 and S4.16 on Push standalone. Also play fast notes (1/16 placeholders, Length 1 step, Peak +12, Attack 50 %) on a bass instrument and check that Push's CPU meter stays reasonable and nothing glitches.
 

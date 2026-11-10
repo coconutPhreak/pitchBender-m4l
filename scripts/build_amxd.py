@@ -79,10 +79,15 @@ def check_patch(patcher: dict, where: str = "patcher") -> None:
             name = box and box.get("saved_attribute_attributes", {}).get("valueof", {}).get("parameter_longname")
             if name != v[0]:
                 errs.append(f"parameters[{k}] = {v[0]!r}, but the box's parameter_longname is {name!r}")
+        hidden = {b["box"]["saved_attribute_attributes"]["valueof"]["parameter_longname"] for b in patcher["boxes"]
+                  if b["box"].get("saved_attribute_attributes", {}).get("valueof", {}).get("parameter_invisible", 0)}
         for bank in patcher.get("parameters", {}).get("parameterbanks", {}).values():
             for n in bank["parameters"]:
                 if n != "-" and n not in longnames:
                     errs.append(f"bank {bank['name']!r}: unknown parameter {n!r}")
+                if n in hidden:
+                    errs.append(f"bank {bank['name']!r}: {n!r} is not automatable (parameter_invisible), and Live "
+                                "can't put it in a Push bank ('parameter not found'); make it automatable")
     if errs:
         sys.exit(f"{where}: refusing to build:\n  " + "\n  ".join(errs))
 

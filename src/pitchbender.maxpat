@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v4.1 (Stage 4, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v4.2 (Stage 4, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -434,7 +434,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v4.1",
+     "text": "PITCHBENDER v4.2",
      "patching_rect": [
       700.0,
       20.0,
@@ -1436,7 +1436,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v4.1",
+     "text": "loaded v4.2",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -1877,8 +1877,7 @@
        "parameter_initial": [
         48
        ],
-       "parameter_annotation_name": "Per-note pitch-bend range each way, in semitones (MPE standard 48). Must match the instrument's MPE bend range.",
-       "parameter_invisible": 1
+       "parameter_annotation_name": "Per-note pitch-bend range each way, in semitones (MPE standard 48). Must match the instrument's MPE bend range. Setup value: avoid p-locking it."
       }
      }
     }
