@@ -95,6 +95,8 @@ Stage 3 is done once each question has an answer in docs/plock-scope.md. If lock
 
 ## Stage 4: pitch envelope as pitch bend ([#4](https://github.com/coconutPhreak/pitchBender-m4l/issues/4))
 
+v4.2 (per-note MPE) tested in Live and on Push 3 Standalone with Meld on 2026-11-10 (L1, S4.1–S4.17, P1, P1b): all pass.
+
 The envelope goes 0 → Peak over Attack, then Peak → End over Decay, then holds End until the next trigger. Times are % of Trigger Length. Pitches are in semitones for now; scale degrees come in Stage 5. The device sends the starting bend before each note-on. Incoming pitch bend passes through on its own (master) channel, so the instrument adds it on top of each note's bend.
 
 Since v4.1 each note plays on its own MPE member channel (2–16, rotating) and carries its own pitch bend. Setup: placeholder notes every 4 steps, Length 4 steps (500 ms at 120 BPM), Bend Range 48 with the instrument's per-note range at 48. Use a sustained sound so the pitch movement is easy to hear. Debug on for the first few tests.

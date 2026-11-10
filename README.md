@@ -31,7 +31,7 @@ Test each stage on Push 3 Standalone before you start the next. Each stage has a
 - [x] Stage 1 (#1): swallow the placeholder note, send Note for Trigger Length, prevent stuck notes
 - [x] Stage 2 (#2): p-lock latch test (no deferral needed)
 - [x] Stage 3 (#3): a step p-lock covers only its own step (see docs/plock-scope.md)
-- [ ] Stage 4 (#4): envelope (Attack, Peak, Decay, End, curves) as pitch bend, in semitones only
+- [x] Stage 4 (#4): envelope (Attack, Peak, Decay, End, curves) as pitch bend, in semitones only
 - [ ] Stage 5 (#5): scale awareness (check that Live API scale reads work in standalone)
 - [ ] Stage 6 (#6): incoming bend with MPE (master channel) and Bend Amount
 - [ ] Stage 7 (#7): Slide and Pressure (per-note MPE)
