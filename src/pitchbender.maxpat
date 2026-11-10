@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v7 (Stages 6-7 + Slide envelope, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v7.1 (Stages 6-7 + Slide envelope, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -106,7 +106,7 @@
     "box": {
      "id": "parse",
      "maxclass": "newobj",
-     "text": "midiparse @hires 1",
+     "text": "midiparse",
      "numinlets": 1,
      "numoutlets": 7,
      "outlettype": [
@@ -132,7 +132,7 @@
     "box": {
      "id": "format",
      "maxclass": "newobj",
-     "text": "midiformat @hires 1",
+     "text": "midiformat",
      "numinlets": 7,
      "numoutlets": 1,
      "outlettype": [
@@ -492,7 +492,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v7",
+     "text": "PITCHBENDER v7.1",
      "patching_rect": [
       700.0,
       20.0,
@@ -1681,7 +1681,7 @@
     "box": {
      "id": "c-dbg",
      "maxclass": "comment",
-     "text": "Debug: turn on to print note-ons (P V), note-offs (P 0), each pitch-bend value sent (bend N, 8192 = centre), each Slide value sent (slide N), the timer setting, and what ended each note to the Max console.",
+     "text": "Debug: turn on to print note-ons (P V), note-offs (P 0), each pitch-bend value sent (bend N, 8192 = centre), each Slide value sent (slide N), every incoming pitch bend with its channel (in_bend_ch_val C V), the timer setting, and what ended each note to the Max console.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -1818,7 +1818,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v7",
+     "text": "loaded v7.1",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -6729,7 +6729,7 @@
     "box": {
      "id": "c-s6",
      "maxclass": "comment",
-     "text": "12. Incoming pitch bend (Stage 6): midiparse/midiformat in 14-bit mode (@hires 1). Bend Amount scales it around centre, live (not latched), before it passes through on its own channel; the instrument adds it to each note's own bend.",
+     "text": "12. (Replaced in v7.1: see 16. Incoming MIDI.)",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -6739,26 +6739,6 @@
       34.0
      ],
      "linecount": 2,
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
-     "id": "expr-mb",
-     "maxclass": "newobj",
-     "text": "expr max(0, min(16383, int(8192. + ($i1 - 8192) * $f2 / 100. + 0.5)))",
-     "numinlets": 2,
-     "numoutlets": 1,
-     "outlettype": [
-      ""
-     ],
-     "patching_rect": [
-      4600.0,
-      100.0,
-      460.0,
-      20.0
-     ],
      "fontname": "Arial Bold",
      "fontsize": 10.0
     }
@@ -7963,6 +7943,576 @@
      "fontname": "Arial Bold",
      "fontsize": 10.0
     }
+   },
+   {
+    "box": {
+     "id": "c-inb",
+     "maxclass": "comment",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "linecount": 3,
+     "patching_rect": [
+      6400.0,
+      40.0,
+      900.0,
+      48.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0,
+     "text": "16. Incoming MIDI (v7.1). Pitch bend is read from the raw bytes (exact 14-bit; midiparse's 7-bit bend output is unused): status 0xE0-0xEF sets the channel, then LSB, MSB (running status allowed). Only MPE master-channel (1) bend is passed on, scaled by Bend Amount around centre, as raw bytes on channel 1; Bend Amount re-applies at once. Other pass-through (poly pressure, CCs, program, channel pressure) is also gated to channel 1: per-note expression on the placeholders' member channels is dropped, so it can't land on the device's own notes."
+    }
+   },
+   {
+    "box": {
+     "id": "t-byte",
+     "maxclass": "newobj",
+     "text": "t i i i i",
+     "numinlets": 1,
+     "numoutlets": 4,
+     "outlettype": [
+      "int",
+      "int",
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      6400.0,
+      120.0,
+      108.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-bsch",
+     "maxclass": "newobj",
+     "text": "expr (($i1 >= 224) && ($i1 < 240)) * ($i1 - 223)",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      6660.0,
+      150.0,
+      348.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "sel-bsch",
+     "maxclass": "newobj",
+     "text": "sel 0",
+     "numinlets": 2,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      ""
+     ],
+     "patching_rect": [
+      6660.0,
+      180.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-bch",
+     "maxclass": "newobj",
+     "text": "i 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      6660.0,
+      210.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-bval",
+     "maxclass": "newobj",
+     "text": "expr ($i1 < 128) * ($i2 == 2) * ($i1 * 128 + $i3 + 1) - 1",
+     "numinlets": 3,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      6400.0,
+      180.0,
+      411.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-bns",
+     "maxclass": "newobj",
+     "text": "expr ($i1 >= 224) * ($i1 < 240) + ($i1 < 128) * (($i2 == 1) * 2 + ($i2 == 2))",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      6520.0,
+      210.0,
+      520.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "sel-bval",
+     "maxclass": "newobj",
+     "text": "sel -1",
+     "numinlets": 2,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      ""
+     ],
+     "patching_rect": [
+      6400.0,
+      210.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-bin",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      6400.0,
+      240.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "pack-bin",
+     "maxclass": "newobj",
+     "text": "pack 0 0",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      6400.0,
+      300.0,
+      70.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "unp-bin",
+     "maxclass": "newobj",
+     "text": "unpack 0 0",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      6400.0,
+      330.0,
+      80.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "pre-inb",
+     "maxclass": "newobj",
+     "text": "prepend in_bend_ch_val",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      6600.0,
+      330.0,
+      150.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-ismaster",
+     "maxclass": "newobj",
+     "text": "expr $i1 == 1",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      6400.0,
+      390.0,
+      103.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-binv",
+     "maxclass": "newobj",
+     "text": "i 8192",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      6500.0,
+      360.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "sel-ismaster",
+     "maxclass": "newobj",
+     "text": "sel 1",
+     "numinlets": 2,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      ""
+     ],
+     "patching_rect": [
+      6400.0,
+      420.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-mbraw",
+     "maxclass": "newobj",
+     "text": "i 8192",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      6400.0,
+      480.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-mbset",
+     "maxclass": "newobj",
+     "text": "t b i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      6400.0,
+      450.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-mb",
+     "maxclass": "newobj",
+     "text": "expr max(0, min(16383, int(8192. + ($i1 - 8192) * $f2 / 100. + 0.5)))",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      6400.0,
+      510.0,
+      495.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-bamt",
+     "maxclass": "newobj",
+     "text": "t b f",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "float"
+     ],
+     "patching_rect": [
+      6600.0,
+      480.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-mbo",
+     "maxclass": "newobj",
+     "text": "t i i i",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "int",
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      6400.0,
+      540.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-mb-b0",
+     "maxclass": "newobj",
+     "text": "expr $i1 * 0 + 224",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      6400.0,
+      570.0,
+      138.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-mb-b1",
+     "maxclass": "newobj",
+     "text": "expr $i1 % 128",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      6600.0,
+      570.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "s-mb-b2",
+     "maxclass": "newobj",
+     "text": "expr $i1 / 128",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      6800.0,
+      570.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-pch1",
+     "maxclass": "newobj",
+     "text": "expr $i1 == 1",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      7000.0,
+      120.0,
+      103.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "gate-p1",
+     "maxclass": "newobj",
+     "text": "gate 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      7060.0,
+      160.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "gate-p2",
+     "maxclass": "newobj",
+     "text": "gate 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      7120.0,
+      160.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "gate-p3",
+     "maxclass": "newobj",
+     "text": "gate 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      7180.0,
+      160.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "gate-p4",
+     "maxclass": "newobj",
+     "text": "gate 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      7240.0,
+      160.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
    }
   ],
   "lines": [
@@ -7975,66 +8525,6 @@
      "destination": [
       "parse",
       0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "parse",
-      1
-     ],
-     "destination": [
-      "format",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "parse",
-      2
-     ],
-     "destination": [
-      "format",
-      2
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "parse",
-      3
-     ],
-     "destination": [
-      "format",
-      3
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "parse",
-      4
-     ],
-     "destination": [
-      "format",
-      4
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "parse",
-      6
-     ],
-     "destination": [
-      "format",
-      6
      ]
     }
    },
@@ -12541,42 +13031,6 @@
    {
     "patchline": {
      "source": [
-      "parse",
-      5
-     ],
-     "destination": [
-      "expr-mb",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-bendamt",
-      0
-     ],
-     "destination": [
-      "expr-mb",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "expr-mb",
-      0
-     ],
-     "destination": [
-      "format",
-      5
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
       "gate-oend",
       1
      ],
@@ -13711,6 +14165,594 @@
      "destination": [
       "obj-scrv",
       0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "midiin",
+      0
+     ],
+     "destination": [
+      "t-byte",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-byte",
+      3
+     ],
+     "destination": [
+      "expr-bsch",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-bsch",
+      0
+     ],
+     "destination": [
+      "sel-bsch",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "sel-bsch",
+      1
+     ],
+     "destination": [
+      "i-bch",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-byte",
+      2
+     ],
+     "destination": [
+      "expr-bval",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-byte",
+      1
+     ],
+     "destination": [
+      "expr-bns",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-bns",
+      0
+     ],
+     "destination": [
+      "expr-bns",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-bns",
+      0
+     ],
+     "destination": [
+      "expr-bval",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-byte",
+      0
+     ],
+     "destination": [
+      "expr-bval",
+      2
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-bval",
+      0
+     ],
+     "destination": [
+      "sel-bval",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "sel-bval",
+      1
+     ],
+     "destination": [
+      "t-bin",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-bin",
+      1
+     ],
+     "destination": [
+      "pack-bin",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-bin",
+      0
+     ],
+     "destination": [
+      "i-bch",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-bch",
+      0
+     ],
+     "destination": [
+      "pack-bin",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "pack-bin",
+      0
+     ],
+     "destination": [
+      "unp-bin",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "pack-bin",
+      0
+     ],
+     "destination": [
+      "pre-inb",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "pre-inb",
+      0
+     ],
+     "destination": [
+      "gate-dbg",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "unp-bin",
+      1
+     ],
+     "destination": [
+      "i-binv",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "unp-bin",
+      0
+     ],
+     "destination": [
+      "expr-ismaster",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-ismaster",
+      0
+     ],
+     "destination": [
+      "sel-ismaster",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "sel-ismaster",
+      0
+     ],
+     "destination": [
+      "i-binv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-binv",
+      0
+     ],
+     "destination": [
+      "t-mbset",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-mbset",
+      1
+     ],
+     "destination": [
+      "i-mbraw",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-mbset",
+      0
+     ],
+     "destination": [
+      "i-mbraw",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-mbraw",
+      0
+     ],
+     "destination": [
+      "expr-mb",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-bendamt",
+      0
+     ],
+     "destination": [
+      "t-bamt",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-bamt",
+      1
+     ],
+     "destination": [
+      "expr-mb",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-bamt",
+      0
+     ],
+     "destination": [
+      "i-mbraw",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-mb",
+      0
+     ],
+     "destination": [
+      "t-mbo",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-mbo",
+      2
+     ],
+     "destination": [
+      "s-mb-b0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-mb-b0",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-mbo",
+      1
+     ],
+     "destination": [
+      "s-mb-b1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-mb-b1",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-mbo",
+      0
+     ],
+     "destination": [
+      "s-mb-b2",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "s-mb-b2",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "parse",
+      6
+     ],
+     "destination": [
+      "expr-pch1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "parse",
+      6
+     ],
+     "destination": [
+      "format",
+      6
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-pch1",
+      0
+     ],
+     "destination": [
+      "gate-p1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "parse",
+      1
+     ],
+     "destination": [
+      "gate-p1",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-p1",
+      0
+     ],
+     "destination": [
+      "format",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-pch1",
+      0
+     ],
+     "destination": [
+      "gate-p2",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "parse",
+      2
+     ],
+     "destination": [
+      "gate-p2",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-p2",
+      0
+     ],
+     "destination": [
+      "format",
+      2
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-pch1",
+      0
+     ],
+     "destination": [
+      "gate-p3",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "parse",
+      3
+     ],
+     "destination": [
+      "gate-p3",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-p3",
+      0
+     ],
+     "destination": [
+      "format",
+      3
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-pch1",
+      0
+     ],
+     "destination": [
+      "gate-p4",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "parse",
+      4
+     ],
+     "destination": [
+      "gate-p4",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-p4",
+      0
+     ],
+     "destination": [
+      "format",
+      4
      ]
     }
    }

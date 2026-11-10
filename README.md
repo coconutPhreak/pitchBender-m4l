@@ -35,7 +35,7 @@ Push banks, in encoder order.
 | Perform | Slide | 0–127 | 64 | Per-note MPE Slide (CC74), e.g. mapped to cutoff in the instrument. With S Depth 0 it's a static value; otherwise it's where the Slide envelope ends (its offset). Also on bank Slide Env. |
 | Perform | Pressure | 0–127 | 0 | Per-note MPE Pressure. Map it in the instrument. |
 | Perform | Breath | 0–127 | 0 | Breath Controller (CC2) on the MPE master channel, sent with each note. Map it in the instrument. A ringing release tail takes the next note's value. |
-| Perform | Bend Amt | 0–100 % | 100 % | Scales incoming pitch bend (touch strip, clip, earlier device) before it passes through. |
+| Perform | Bend Amt | 0–100 % | 100 % | Scales incoming pitch bend (touch strip, clip, earlier device) on the MPE master channel before it passes through; applies at once. The instrument's own (master) pitch-bend range sets how far a full bend goes. |
 | Slide Env | Slide | 0–127 | 64 | Same control as on Perform: the envelope's offset (end value). |
 | Slide Env | S Depth | −127 to +127 | 0 | Envelope depth: each note's Slide starts at Slide + Depth (the starting cutoff) and moves to Slide. Negative = rising. 0 = no envelope. |
 | Slide Env | S Rel | 0–400 % of Length | 100 % | Release time. 100 % lands exactly at the note's end. Above 100 % overshoots: the note ends mid-release and Slide holds where it got to. 0 % = straight to Slide. |

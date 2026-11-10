@@ -42,7 +42,7 @@ Paste the console output back, along with any red error lines that appear when t
 
 ## Load check (do this first)
 
-- **L1:** Load the device. The Max console prints `pitchbender: loaded v7` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
+- **L1:** Load the device. The Max console prints `pitchbender: loaded v7.1` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 
@@ -142,14 +142,15 @@ Setup: as Stage 4 (placeholders every 4 steps, Length 4 steps, Meld per-note ran
 
 ## Stage 6: incoming bend and Bend Amount ([#6](https://github.com/coconutPhreak/pitchBender-m4l/issues/6))
 
-Incoming pitch bend (Push's touch strip, a clip's pitch-bend envelope, an earlier device) arrives on the MPE master channel. The device scales it by **Bend Amount** (bank Perform, encoder 5) and passes it on in 14-bit; the instrument adds it to each note's own bend. Since v6, `midiparse` and `midiformat` run in 14-bit mode (`@hires 1`).
+Incoming pitch bend (Push's touch strip, a clip's pitch-bend envelope, an earlier device) arrives on the MPE master channel. The device scales it by **Bend Amount** (bank Perform, encoder 6) and passes it on in 14-bit; the instrument adds it to each note's own bend. Since v7.1 the device reads incoming bend from the raw MIDI bytes (exact 14-bit; v6's `@hires` mode gave 7-bit values and a constant transposition at Bend Amount below 100 %), passes on only master-channel (channel 1) bend, and drops per-note bend, Slide and Pressure arriving on the placeholders' member channels. With Debug on, every incoming bend prints as `in_bend_ch_val C V` (C = channel, V = 0–16383, 8192 = centre).
 
 - **S6.1 Adds on top:** Peak +7, End +7. Hold the touch strip up while notes play: the whole pitch, envelope included, moves up together.
 - **S6.2 Smooth:** sweep the touch strip slowly over its whole range. The bend is smooth, with no 7-bit stepping (about a sixth of a semitone at ±24 would be audible as steps).
-- **S6.3 Bend Amount:** at 100 % the touch strip bends fully, at 50 % half as far, at 0 % not at all. It applies at once while you hold a bend (move the strip a little after changing it).
+- **S6.3 Bend Amount:** at 100 % the touch strip bends fully, at 50 % half as far, at 0 % not at all, and with the strip released nothing moves at any Bend Amount (no transposition). Changing it while you hold a bend applies at once.
+- **S6.7 Where bend arrives (v7.1):** with Debug on, move the touch strip and play a few placeholder notes. Note the channels in `in_bend_ch_val`: the touch strip should be channel 1; the placeholders' own per-note bends (if any) show on 2–16 and are dropped. If the touch strip shows a channel other than 1, paste the lines back.
 - **S6.4 Clip bend:** draw a pitch-bend envelope in the placeholder clip. It bends the device's notes, scaled by Bend Amount.
 - **S6.5 Placeholder expression:** per-note bend on the placeholder notes themselves (e.g. from playing Push pads with slide) does **not** reach the instrument: it's dropped with the placeholder.
-- **S6.6 Push standalone:** repeat S6.1–S6.3 on Push 3 Standalone. If `midiparse` or `midiformat` print an error about `hires` at load, paste it back.
+- **S6.6 Push standalone:** repeat S6.1–S6.3 and S6.7 on Push 3 Standalone.
 
 ## Stage 7: Slide and Pressure ([#7](https://github.com/coconutPhreak/pitchBender-m4l/issues/7))
 
