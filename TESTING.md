@@ -31,12 +31,14 @@ In the device editor (patching view), turn on the **Debug** toggle (right side, 
 
 - `pitchbender: note P V` for each note-on the device sends
 - `pitchbender: note P 0` for each note-off
+- `pitchbender: timer_ticks N` (transport playing) or `pitchbender: timer_ms N` (stopped): the Trigger Length timer for that note
+- `pitchbender: end timer` when the timer ends a note, and `pitchbender: end kill` at each new trigger, transport stop, clip stop or device off. A note-off right after `end kill` means the note was cut, not timed out.
 
 Paste the console output back, along with any red error lines that appear when the device loads.
 
 ## Load check (do this first)
 
-- **L1:** Load the device. The Max console prints `pitchbender: loaded v1.1` with no red errors, and the three controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
+- **L1:** Load the device. The Max console prints `pitchbender: loaded v1.2` with no red errors, and the three controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 

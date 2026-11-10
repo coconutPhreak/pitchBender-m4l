@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v1.1 (Stage 1): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v1.2 (Stage 1): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -433,7 +433,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v1.1",
+     "text": "PITCHBENDER v1.2",
      "patching_rect": [
       700.0,
       20.0,
@@ -1298,7 +1298,7 @@
     "box": {
      "id": "c-dbg",
      "maxclass": "comment",
-     "text": "Debug: turn on to print every note-on (P V) and note-off (P 0) to the Max console.",
+     "text": "Debug: turn on to print note-ons (P V), note-offs (P 0), the timer setting, and what ended each note (timer or kill) to the Max console.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -1435,7 +1435,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v1.1",
+     "text": "loaded v1.2",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -1501,6 +1501,86 @@
       300.0,
       280.0,
       160.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "pre-tms",
+     "maxclass": "newobj",
+     "text": "prepend timer_ms",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      860.0,
+      560.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "pre-tticks",
+     "maxclass": "newobj",
+     "text": "prepend timer_ticks",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      980.0,
+      560.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-end-timer",
+     "maxclass": "message",
+     "text": "end timer",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      860.0,
+      590.0,
+      79.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-end-kill",
+     "maxclass": "message",
+     "text": "end kill",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      980.0,
+      590.0,
+      72.0,
       20.0
      ],
      "fontname": "Arial Bold",
@@ -2381,6 +2461,102 @@
      ],
      "destination": [
       "pack-on",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "translate",
+      0
+     ],
+     "destination": [
+      "pre-tms",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "pre-tms",
+      0
+     ],
+     "destination": [
+      "gate-dbg",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-time",
+      1
+     ],
+     "destination": [
+      "pre-tticks",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "pre-tticks",
+      0
+     ],
+     "destination": [
+      "gate-dbg",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "dly",
+      0
+     ],
+     "destination": [
+      "m-end-timer",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-end-timer",
+      0
+     ],
+     "destination": [
+      "gate-dbg",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-kill",
+      0
+     ],
+     "destination": [
+      "m-end-kill",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-end-kill",
+      0
+     ],
+     "destination": [
+      "gate-dbg",
       1
      ]
     }
