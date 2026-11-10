@@ -18,7 +18,7 @@
   "openrect": [
    0.0,
    0.0,
-   190.0,
+   356.0,
    169.0
   ],
   "bglocked": 0,
@@ -38,7 +38,7 @@
   "boxanimatetime": 500,
   "enablehscroll": 1,
   "enablevscroll": 1,
-  "devicewidth": 190.0,
+  "devicewidth": 356.0,
   "description": "Mono pitch-envelope MIDI effect for bass lines (Stage 1: note trigger and stuck-note safety).",
   "digest": "",
   "tags": "",
@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v2.1 (Stage 2): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v4 (Stage 4): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -253,7 +253,7 @@
     "box": {
      "id": "c-trig2",
      "maxclass": "comment",
-     "text": "Right to left: (3) kill the sounding note, (2) velocity, (1) Note -> note-on, (0) start the Trigger Length timer. Parameters are read here, at the trigger (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note (Live and Push standalone).",
+     "text": "Right to left: (3) kill the sounding note, (2) Trigger Length: start the note timer and the pitch envelope, whose first bend goes out before the note-on, (1) velocity, (0) Note -> note-on. Parameters are read here, at the trigger (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -331,7 +331,7 @@
      "presentation": 1,
      "presentation_rect": [
       110.0,
-      40.0,
+      113.0,
       70.0,
       15.0
      ],
@@ -382,8 +382,8 @@
      ],
      "presentation": 1,
      "presentation_rect": [
-      56.0,
-      22.0,
+      6.0,
+      92.0,
       44.0,
       47.0
      ],
@@ -420,8 +420,8 @@
      "presentation": 1,
      "presentation_rect": [
       110.0,
-      22.0,
-      60.0,
+      95.0,
+      70.0,
       18.0
      ],
      "textjustification": 0
@@ -433,7 +433,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v2.1",
+     "text": "PITCHBENDER v4",
      "patching_rect": [
       700.0,
       20.0,
@@ -1298,7 +1298,7 @@
     "box": {
      "id": "c-dbg",
      "maxclass": "comment",
-     "text": "Debug: turn on to print note-ons (P V), note-offs (P 0), the timer setting, and what ended each note (timer or kill) to the Max console.",
+     "text": "Debug: turn on to print note-ons (P V), note-offs (P 0), each pitch-bend value sent (bend N, 8192 = centre), the timer setting, and what ended each note to the Max console.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -1435,7 +1435,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v2.1",
+     "text": "loaded v4",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -1581,6 +1581,1416 @@
       980.0,
       590.0,
       72.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "obj-attack",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Attack",
+     "patching_rect": [
+      1400.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      56.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Attack",
+       "parameter_shortname": "Attack",
+       "parameter_type": 0,
+       "parameter_unitstyle": 5,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 100.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        20.0
+       ],
+       "parameter_annotation_name": "Time from note-on to Peak, as a % of Trigger Length"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-peak",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Peak",
+     "patching_rect": [
+      1460.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      106.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Peak",
+       "parameter_shortname": "Peak",
+       "parameter_type": 1,
+       "parameter_unitstyle": 7,
+       "parameter_mmin": -24.0,
+       "parameter_mmax": 24.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_annotation_name": "Pitch the attack rises (or falls) to, in semitones from Note"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-acurve",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Attack Curve",
+     "patching_rect": [
+      1520.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      156.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Attack Curve",
+       "parameter_shortname": "A Curve",
+       "parameter_type": 0,
+       "parameter_unitstyle": 1,
+       "parameter_mmin": -100.0,
+       "parameter_mmax": 100.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        0.0
+       ],
+       "parameter_annotation_name": "Attack shape: -100 fast start, 0 linear, +100 slow start and fast snap"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-decay",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Decay",
+     "patching_rect": [
+      1580.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      206.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Decay",
+       "parameter_shortname": "Decay",
+       "parameter_type": 0,
+       "parameter_unitstyle": 5,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 100.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        30.0
+       ],
+       "parameter_annotation_name": "Time from Peak to End, as a % of Trigger Length"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-end",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "End",
+     "patching_rect": [
+      1640.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      256.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "End",
+       "parameter_shortname": "End",
+       "parameter_type": 1,
+       "parameter_unitstyle": 7,
+       "parameter_mmin": -24.0,
+       "parameter_mmax": 24.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_annotation_name": "Pitch the decay settles at and holds, in semitones from Note"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-dcurve",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Decay Curve",
+     "patching_rect": [
+      1700.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      306.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Decay Curve",
+       "parameter_shortname": "D Curve",
+       "parameter_type": 0,
+       "parameter_unitstyle": 1,
+       "parameter_mmin": -100.0,
+       "parameter_mmax": 100.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        0.0
+       ],
+       "parameter_annotation_name": "Decay shape: -100 fast start, 0 linear, +100 slow start and fast snap"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-bendrange",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Bend Range",
+     "patching_rect": [
+      1760.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      56.0,
+      92.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Bend Range",
+       "parameter_shortname": "Bend Rng",
+       "parameter_type": 1,
+       "parameter_unitstyle": 7,
+       "parameter_mmin": 2.0,
+       "parameter_mmax": 96.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        48
+       ],
+       "parameter_annotation_name": "Total pitch-bend span in semitones (48 = +/-24). Set the instrument's bend range to match.",
+       "parameter_invisible": 1
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "obj-envelope",
+     "maxclass": "live.toggle",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "parameter_enable": 1,
+     "varname": "Envelope",
+     "patching_rect": [
+      1820.0,
+      60.0,
+      15.0,
+      15.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      216.0,
+      113.0,
+      15.0,
+      15.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Envelope",
+       "parameter_shortname": "Envelope",
+       "parameter_type": 2,
+       "parameter_mmax": 1.0,
+       "parameter_enum": [
+        "Off",
+        "On"
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        1
+       ],
+       "parameter_annotation_name": "Pitch envelope on or off for this trigger"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "lbl-envelope",
+     "maxclass": "live.comment",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "text": "Envelope",
+     "patching_rect": [
+      1820.0,
+      40.0,
+      60.0,
+      18.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      200.0,
+      95.0,
+      60.0,
+      18.0
+     ],
+     "textjustification": 0
+    }
+   },
+   {
+    "box": {
+     "id": "f-att",
+     "maxclass": "newobj",
+     "text": "f",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "float"
+     ],
+     "patching_rect": [
+      1400.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "f-dec",
+     "maxclass": "newobj",
+     "text": "f",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "float"
+     ],
+     "patching_rect": [
+      1460.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "f-peak",
+     "maxclass": "newobj",
+     "text": "f",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "float"
+     ],
+     "patching_rect": [
+      1520.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "f-end",
+     "maxclass": "newobj",
+     "text": "f",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "float"
+     ],
+     "patching_rect": [
+      1580.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "f-acrv",
+     "maxclass": "newobj",
+     "text": "f",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "float"
+     ],
+     "patching_rect": [
+      1640.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "f-dcrv",
+     "maxclass": "newobj",
+     "text": "f",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "float"
+     ],
+     "patching_rect": [
+      1700.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-envon",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      1760.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-range",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      1820.0,
+      160.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "c-env",
+     "maxclass": "comment",
+     "text": "7. Pitch envelope (Stage 4). Started from the Trigger Length lookup, so its first bend goes out before the note-on. (4) U = Trigger Length in clock units (ticks while playing, ms when stopped), (3) clock step 1 tick / 1 ms, (2) latch the envelope parameters, (1) reset the step counter, (0) send the x = 0 value and start the clock.",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      1400.0,
+      200.0,
+      760.0,
+      48.0
+     ],
+     "linecount": 3,
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-env",
+     "maxclass": "newobj",
+     "text": "t b b b b i",
+     "numinlets": 1,
+     "numoutlets": 5,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "int"
+     ],
+     "patching_rect": [
+      1400.0,
+      250.0,
+      130.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-U",
+     "maxclass": "newobj",
+     "text": "t i i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      1800.0,
+      290.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "translate2",
+     "maxclass": "newobj",
+     "text": "translate ticks ms @listen 0",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1860.0,
+      320.0,
+      170.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-U",
+     "maxclass": "newobj",
+     "text": "expr ($i2 > 0) * $i1 + ($i2 == 0) * $f3",
+     "numinlets": 3,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1800.0,
+      350.0,
+      285.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "gate-envmode",
+     "maxclass": "newobj",
+     "text": "gate 2 1",
+     "numinlets": 2,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      ""
+     ],
+     "patching_rect": [
+      1700.0,
+      290.0,
+      70.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-env-ms",
+     "maxclass": "message",
+     "text": "delaytime 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1700.0,
+      320.0,
+      93.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-env-ticks",
+     "maxclass": "message",
+     "text": "delaytime 1 ticks",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1700.0,
+      350.0,
+      135.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-latch",
+     "maxclass": "newobj",
+     "text": "t b b b b b b b b",
+     "numinlets": 1,
+     "numoutlets": 8,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      1400.0,
+      400.0,
+      196.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-y",
+     "maxclass": "newobj",
+     "text": "expr $i8 * (($f1 < $f2 / max(100., $f2 + $f3)) * $f4 * pow(min($f1 / max($f2 / max(100., $f2 + $f3), 0.000001), 1.), pow(2., $f6 / 50.)) + ($f1 >= $f2 / max(100., $f2 + $f3)) * ($f1 < ($f2 + $f3) / max(100., $f2 + $f3)) * ($f4 + ($f5 - $f4) * pow(min(max(($f1 - $f2 / max(100., $f2 + $f3)) / max($f3 / max(100., $f2 + $f3), 0.000001), 0.), 1.), pow(2., $f7 / 50.))) + ($f1 >= ($f2 + $f3) / max(100., $f2 + $f3)) * $f5)",
+     "numinlets": 8,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1400.0,
+      560.0,
+      520.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-H",
+     "maxclass": "newobj",
+     "text": "expr max($i1, 2) / 2.",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1820.0,
+      440.0,
+      159.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-sum",
+     "maxclass": "newobj",
+     "text": "expr min(($f1 + $f2) / 100., 1.)",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1600.0,
+      470.0,
+      236.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-sum",
+     "maxclass": "newobj",
+     "text": "t f f",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "float",
+      "float"
+     ],
+     "patching_rect": [
+      1600.0,
+      500.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-run",
+     "maxclass": "newobj",
+     "text": "expr $i1 * ($f2 > 0.)",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1520.0,
+      500.0,
+      159.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-att",
+     "maxclass": "newobj",
+     "text": "t f f",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "float",
+      "float"
+     ],
+     "patching_rect": [
+      1460.0,
+      440.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-dec",
+     "maxclass": "newobj",
+     "text": "t f f",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "float",
+      "float"
+     ],
+     "patching_rect": [
+      1520.0,
+      440.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "gate-loop",
+     "maxclass": "newobj",
+     "text": "gate 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1520.0,
+      530.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "dly-env",
+     "maxclass": "newobj",
+     "text": "delay 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "bang"
+     ],
+     "patching_rect": [
+      1700.0,
+      400.0,
+      60.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "i-n",
+     "maxclass": "newobj",
+     "text": "i",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      1960.0,
+      470.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-n0",
+     "maxclass": "message",
+     "text": "0",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1960.0,
+      440.0,
+      23.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-start",
+     "maxclass": "newobj",
+     "text": "t b b",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      2040.0,
+      440.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-x0",
+     "maxclass": "message",
+     "text": "0.",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      2100.0,
+      470.0,
+      30.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-tick",
+     "maxclass": "newobj",
+     "text": "t b b",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      1700.0,
+      430.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "plus-n",
+     "maxclass": "newobj",
+     "text": "+ 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      "int"
+     ],
+     "patching_rect": [
+      1960.0,
+      500.0,
+      40.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-n",
+     "maxclass": "newobj",
+     "text": "t i i",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      1960.0,
+      530.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-x",
+     "maxclass": "newobj",
+     "text": "expr $i1 / $f2",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      2040.0,
+      530.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-x",
+     "maxclass": "newobj",
+     "text": "t f f",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "float",
+      "float"
+     ],
+     "patching_rect": [
+      2040.0,
+      500.0,
+      64.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-done",
+     "maxclass": "newobj",
+     "text": "expr $f1 >= $f2",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      2160.0,
+      500.0,
+      117.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "sel-done",
+     "maxclass": "newobj",
+     "text": "sel 1",
+     "numinlets": 2,
+     "numoutlets": 2,
+     "outlettype": [
+      "bang",
+      ""
+     ],
+     "patching_rect": [
+      2160.0,
+      530.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-close",
+     "maxclass": "message",
+     "text": "0",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      2160.0,
+      560.0,
+      23.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "c-bend",
+     "maxclass": "comment",
+     "text": "8. Bend out: semitones -> 14-bit (H = Bend Range / 2, clamped to +/-H), sent only when it changes, as raw bytes (status, LSB, MSB) straight to midiout, because midiformat's bend inlet is 7-bit. Transport stop resets to centre.",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      1400.0,
+      600.0,
+      760.0,
+      34.0
+     ],
+     "linecount": 2,
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-bend",
+     "maxclass": "newobj",
+     "text": "expr int(8192. + max(min($f1 / $f2, 1.), -1.) * 8191. + 0.5)",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1400.0,
+      640.0,
+      432.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-bv",
+     "maxclass": "newobj",
+     "text": "t i i i",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "int",
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      1400.0,
+      670.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-centre",
+     "maxclass": "message",
+     "text": "8192",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1600.0,
+      640.0,
+      44.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-chg",
+     "maxclass": "newobj",
+     "text": "expr $i1 != $i2",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1520.0,
+      700.0,
+      117.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "gate-bend",
+     "maxclass": "newobj",
+     "text": "gate 1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1400.0,
+      730.0,
+      50.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-bo",
+     "maxclass": "newobj",
+     "text": "t i i i",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "int",
+      "int",
+      "int"
+     ],
+     "patching_rect": [
+      1400.0,
+      760.0,
+      86.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-st",
+     "maxclass": "newobj",
+     "text": "expr $i1 * 0 + 223 + $i2",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1600.0,
+      790.0,
+      180.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-lsb",
+     "maxclass": "newobj",
+     "text": "expr $i1 % 128",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1500.0,
+      790.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-msb",
+     "maxclass": "newobj",
+     "text": "expr $i1 / 128",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1400.0,
+      790.0,
+      110.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "m-ch1",
+     "maxclass": "message",
+     "text": "1",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1700.0,
+      760.0,
+      23.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "pre-bend",
+     "maxclass": "newobj",
+     "text": "prepend bend",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1500.0,
+      730.0,
+      90.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "t-init2",
+     "maxclass": "newobj",
+     "text": "t b b b b b b b b b",
+     "numinlets": 1,
+     "numoutlets": 9,
+     "outlettype": [
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "bang",
+      "bang"
+     ],
+     "patching_rect": [
+      1880.0,
+      120.0,
+      218.0,
       20.0
      ],
      "fontname": "Arial Bold",
@@ -1742,42 +3152,6 @@
      "destination": [
       "i-len",
       1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-trig",
-      2
-     ],
-     "destination": [
-      "i-vel",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-trig",
-      1
-     ],
-     "destination": [
-      "i-note",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-trig",
-      0
-     ],
-     "destination": [
-      "i-len",
-      0
      ]
     }
    },
@@ -2572,6 +3946,1218 @@
       0
      ]
     }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-attack",
+      0
+     ],
+     "destination": [
+      "f-att",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-decay",
+      0
+     ],
+     "destination": [
+      "f-dec",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-peak",
+      0
+     ],
+     "destination": [
+      "f-peak",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-end",
+      0
+     ],
+     "destination": [
+      "f-end",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-acurve",
+      0
+     ],
+     "destination": [
+      "f-acrv",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-dcurve",
+      0
+     ],
+     "destination": [
+      "f-dcrv",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-envelope",
+      0
+     ],
+     "destination": [
+      "i-envon",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-bendrange",
+      0
+     ],
+     "destination": [
+      "i-range",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-trig",
+      2
+     ],
+     "destination": [
+      "i-len",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-trig",
+      1
+     ],
+     "destination": [
+      "i-vel",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-trig",
+      0
+     ],
+     "destination": [
+      "i-note",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "coll-len",
+      0
+     ],
+     "destination": [
+      "t-env",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-env",
+      4
+     ],
+     "destination": [
+      "t-U",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-U",
+      1
+     ],
+     "destination": [
+      "translate2",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "translate2",
+      0
+     ],
+     "destination": [
+      "expr-U",
+      2
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-U",
+      0
+     ],
+     "destination": [
+      "expr-U",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "observer",
+      0
+     ],
+     "destination": [
+      "expr-U",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-env",
+      3
+     ],
+     "destination": [
+      "gate-envmode",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "plus-state",
+      0
+     ],
+     "destination": [
+      "gate-envmode",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-envmode",
+      0
+     ],
+     "destination": [
+      "m-env-ms",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-envmode",
+      1
+     ],
+     "destination": [
+      "m-env-ticks",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-env",
+      2
+     ],
+     "destination": [
+      "t-latch",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-latch",
+      7
+     ],
+     "destination": [
+      "i-range",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-range",
+      0
+     ],
+     "destination": [
+      "expr-H",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-latch",
+      6
+     ],
+     "destination": [
+      "f-acrv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "f-acrv",
+      0
+     ],
+     "destination": [
+      "expr-y",
+      5
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-latch",
+      5
+     ],
+     "destination": [
+      "f-dcrv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "f-dcrv",
+      0
+     ],
+     "destination": [
+      "expr-y",
+      6
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-latch",
+      4
+     ],
+     "destination": [
+      "f-peak",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "f-peak",
+      0
+     ],
+     "destination": [
+      "expr-y",
+      3
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-latch",
+      3
+     ],
+     "destination": [
+      "f-end",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "f-end",
+      0
+     ],
+     "destination": [
+      "expr-y",
+      4
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-latch",
+      2
+     ],
+     "destination": [
+      "f-dec",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "f-dec",
+      0
+     ],
+     "destination": [
+      "t-dec",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-dec",
+      1
+     ],
+     "destination": [
+      "expr-y",
+      2
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-dec",
+      0
+     ],
+     "destination": [
+      "expr-sum",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-latch",
+      1
+     ],
+     "destination": [
+      "f-att",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "f-att",
+      0
+     ],
+     "destination": [
+      "t-att",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-att",
+      1
+     ],
+     "destination": [
+      "expr-y",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-att",
+      0
+     ],
+     "destination": [
+      "expr-sum",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-sum",
+      0
+     ],
+     "destination": [
+      "t-sum",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-latch",
+      0
+     ],
+     "destination": [
+      "i-envon",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-envon",
+      0
+     ],
+     "destination": [
+      "expr-y",
+      7
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-envon",
+      0
+     ],
+     "destination": [
+      "expr-run",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-run",
+      0
+     ],
+     "destination": [
+      "gate-loop",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-env-ms",
+      0
+     ],
+     "destination": [
+      "dly-env",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-env-ticks",
+      0
+     ],
+     "destination": [
+      "dly-env",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-loop",
+      0
+     ],
+     "destination": [
+      "dly-env",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-stop",
+      0
+     ],
+     "destination": [
+      "dly-env",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-env",
+      1
+     ],
+     "destination": [
+      "m-n0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-n0",
+      0
+     ],
+     "destination": [
+      "i-n",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-env",
+      0
+     ],
+     "destination": [
+      "t-start",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-start",
+      1
+     ],
+     "destination": [
+      "m-x0",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-x0",
+      0
+     ],
+     "destination": [
+      "expr-y",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-start",
+      0
+     ],
+     "destination": [
+      "gate-loop",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "dly-env",
+      0
+     ],
+     "destination": [
+      "t-tick",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-tick",
+      1
+     ],
+     "destination": [
+      "i-n",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "i-n",
+      0
+     ],
+     "destination": [
+      "plus-n",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "plus-n",
+      0
+     ],
+     "destination": [
+      "t-n",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-n",
+      1
+     ],
+     "destination": [
+      "i-n",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-n",
+      0
+     ],
+     "destination": [
+      "expr-x",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-U",
+      0
+     ],
+     "destination": [
+      "expr-x",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-x",
+      0
+     ],
+     "destination": [
+      "t-x",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sum",
+      1
+     ],
+     "destination": [
+      "expr-done",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-sum",
+      0
+     ],
+     "destination": [
+      "expr-run",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-x",
+      1
+     ],
+     "destination": [
+      "expr-done",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-done",
+      0
+     ],
+     "destination": [
+      "sel-done",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "sel-done",
+      0
+     ],
+     "destination": [
+      "m-close",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-close",
+      0
+     ],
+     "destination": [
+      "gate-loop",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-x",
+      0
+     ],
+     "destination": [
+      "expr-y",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-tick",
+      0
+     ],
+     "destination": [
+      "gate-loop",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-y",
+      0
+     ],
+     "destination": [
+      "expr-bend",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-H",
+      0
+     ],
+     "destination": [
+      "expr-bend",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-bend",
+      0
+     ],
+     "destination": [
+      "t-bv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "sel-stop",
+      0
+     ],
+     "destination": [
+      "m-centre",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-centre",
+      0
+     ],
+     "destination": [
+      "t-bv",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-bv",
+      2
+     ],
+     "destination": [
+      "expr-chg",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-chg",
+      0
+     ],
+     "destination": [
+      "gate-bend",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-bv",
+      1
+     ],
+     "destination": [
+      "gate-bend",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-bv",
+      0
+     ],
+     "destination": [
+      "expr-chg",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-bend",
+      0
+     ],
+     "destination": [
+      "t-bo",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-bo",
+      2
+     ],
+     "destination": [
+      "expr-st",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-bo",
+      1
+     ],
+     "destination": [
+      "expr-lsb",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-bo",
+      0
+     ],
+     "destination": [
+      "expr-msb",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-st",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-lsb",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-msb",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "parse",
+      6
+     ],
+     "destination": [
+      "expr-st",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "m-ch1",
+      0
+     ],
+     "destination": [
+      "expr-st",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "gate-bend",
+      0
+     ],
+     "destination": [
+      "pre-bend",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "pre-bend",
+      0
+     ],
+     "destination": [
+      "gate-dbg",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "thisdev",
+      0
+     ],
+     "destination": [
+      "t-init2",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init2",
+      1
+     ],
+     "destination": [
+      "obj-attack",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init2",
+      2
+     ],
+     "destination": [
+      "obj-decay",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init2",
+      3
+     ],
+     "destination": [
+      "obj-peak",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init2",
+      4
+     ],
+     "destination": [
+      "obj-end",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init2",
+      5
+     ],
+     "destination": [
+      "obj-acurve",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init2",
+      6
+     ],
+     "destination": [
+      "obj-dcurve",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init2",
+      7
+     ],
+     "destination": [
+      "obj-envelope",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init2",
+      8
+     ],
+     "destination": [
+      "obj-bendrange",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init2",
+      0
+     ],
+     "destination": [
+      "m-ch1",
+      0
+     ]
+    }
    }
   ],
   "parameters": {
@@ -2597,6 +5183,20 @@
      "parameters": [
       "Note",
       "Trigger Length",
+      "Attack",
+      "Peak",
+      "Attack Curve",
+      "Decay",
+      "End",
+      "Decay Curve"
+     ]
+    },
+    "1": {
+     "index": 1,
+     "name": "Perform",
+     "parameters": [
+      "Velocity",
+      "Envelope",
       "-",
       "-",
       "-",
@@ -2605,13 +5205,13 @@
       "-"
      ]
     },
-    "1": {
-     "index": 1,
-     "name": "Perform",
+    "2": {
+     "index": 2,
+     "name": "Setup",
      "parameters": [
-      "Velocity",
       "-",
       "-",
+      "Bend Range",
       "-",
       "-",
       "-",
@@ -2620,7 +5220,47 @@
      ]
     }
    },
-   "inherited_shortname": 1
+   "inherited_shortname": 1,
+   "obj-attack": [
+    "Attack",
+    "Attack",
+    0
+   ],
+   "obj-peak": [
+    "Peak",
+    "Peak",
+    0
+   ],
+   "obj-acurve": [
+    "Attack Curve",
+    "A Curve",
+    0
+   ],
+   "obj-decay": [
+    "Decay",
+    "Decay",
+    0
+   ],
+   "obj-end": [
+    "End",
+    "End",
+    0
+   ],
+   "obj-dcurve": [
+    "Decay Curve",
+    "D Curve",
+    0
+   ],
+   "obj-bendrange": [
+    "Bend Range",
+    "Bend Rng",
+    0
+   ],
+   "obj-envelope": [
+    "Envelope",
+    "Envelope",
+    0
+   ]
   },
   "dependency_cache": [],
   "latency": 0,
