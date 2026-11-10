@@ -42,6 +42,8 @@ Paste the console output back, along with any red error lines that appear when t
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 
+v1.3 tested in Live (with Meld, directly on the track) and on Push 3 Standalone on 2026-11-10 (L1, S1.1–S1.12, P1, P1a): all pass.
+
 Use a clip with placeholder notes at different pitches, lengths and velocities. Turn on Debug.
 
 - **S1.1 Trigger:** each placeholder note-on plays C1 at velocity 100, whatever the placeholder's pitch and velocity. The console shows `note 36 100`, then `note 36 0` one step later.
