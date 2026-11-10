@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v6.1 (Stages 6-7, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v6.2 (Stages 6-7, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -230,10 +230,11 @@
     "box": {
      "id": "t-trig",
      "maxclass": "newobj",
-     "text": "t b b b b b b b b",
+     "text": "t b b b b b b b b b",
      "numinlets": 1,
-     "numoutlets": 8,
+     "numoutlets": 9,
      "outlettype": [
+      "bang",
       "bang",
       "bang",
       "bang",
@@ -246,7 +247,7 @@
      "patching_rect": [
       20.0,
       210.0,
-      190.0,
+      210.0,
       20.0
      ],
      "fontname": "Arial Bold",
@@ -257,7 +258,7 @@
     "box": {
      "id": "c-trig2",
      "maxclass": "comment",
-     "text": "Right to left: (7) kill the sounding note, (6) next MPE channel, (5) Trigger Length: note timer and pitch envelope, whose first bend goes out now, (4) Slide, (3) Pressure, (2) Breath, (1) velocity, (0) Note -> note-on. Parameters are read here (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note.",
+     "text": "Right to left: (8) kill the sounding note, (7) next MPE channel, (6) Trigger Length: note timer and pitch envelope, whose first bend goes out now, (5) Slide, (4) Pressure, (3) Breath, (2) velocity, (1) Note -> note-on, (0) Slide and Pressure again, after the note-on (v6.2: with overlapping notes the instrument ignored the values sent before the note-on). Parameters are read here (latched for this note). No deferral: Stage 2 found a step's p-lock always lands before its note.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -491,7 +492,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v6.1",
+     "text": "PITCHBENDER v6.2",
      "patching_rect": [
       700.0,
       20.0,
@@ -1817,7 +1818,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v6.1",
+     "text": "loaded v6.2",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -7420,7 +7421,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      7
+      8
      ],
      "destination": [
       "t-kill",
@@ -8152,7 +8153,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      5
+      6
      ],
      "destination": [
       "i-len",
@@ -8164,7 +8165,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      1
+      2
      ],
      "destination": [
       "i-vel",
@@ -8176,7 +8177,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      0
+      1
      ],
      "destination": [
       "i-note",
@@ -9196,7 +9197,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      6
+      7
      ],
      "destination": [
       "i-chn",
@@ -11692,7 +11693,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      4
+      5
      ],
      "destination": [
       "i-slide",
@@ -11776,7 +11777,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      3
+      4
      ],
      "destination": [
       "i-press",
@@ -12112,7 +12113,7 @@
     "patchline": {
      "source": [
       "t-trig",
-      2
+      3
      ],
      "destination": [
       "i-breath",
@@ -12164,6 +12165,30 @@
      ],
      "destination": [
       "obj-breath",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-trig",
+      0
+     ],
+     "destination": [
+      "i-slide",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-trig",
+      0
+     ],
+     "destination": [
+      "i-press",
       0
      ]
     }

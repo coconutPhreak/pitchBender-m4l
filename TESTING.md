@@ -42,7 +42,7 @@ Paste the console output back, along with any red error lines that appear when t
 
 ## Load check (do this first)
 
-- **L1:** Load the device. The Max console prints `pitchbender: loaded v6.1` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
+- **L1:** Load the device. The Max console prints `pitchbender: loaded v6.2` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 
@@ -153,13 +153,14 @@ Incoming pitch bend (Push's touch strip, a clip's pitch-bend envelope, an earlie
 
 ## Stage 7: Slide and Pressure ([#7](https://github.com/coconutPhreak/pitchBender-m4l/issues/7))
 
-Per-note MPE Slide (CC74) and Pressure, on bank Perform encoders 3 and 4 (Breath, a master-channel CC2, is on encoder 5 since v6.1), sent on each note's own channel after its starting bend and before its note-on. In Meld's modulation matrix, map **MPE Slide** to the filter cutoff and **MPE Pressure** to something else audible.
+Per-note MPE Slide (CC74) and Pressure, on bank Perform encoders 3 and 4 (Breath, a master-channel CC2, is on encoder 5 since v6.1), sent on each note's own channel after its starting bend and before its note-on, and again straight after the note-on (since v6.2). In Meld's modulation matrix, map **MPE Slide** to the filter cutoff and **MPE Pressure** to something else audible.
 
 - **S7.1 Per note:** Slide 0 vs 127 changes the cutoff on the next notes. Same for Pressure.
 - **S7.2 Live knob:** turn Slide while a long note (Length 16 steps) holds: the sound follows at once.
 - **S7.3 P-locks:** p-lock Slide 127 on one step only: that note is bright, its neighbours aren't. Its release tail keeps its own Slide while the next note plays.
 - **S7.4 Master CCs:** a CC on the master channel (e.g. the mod wheel) still passes through.
 - **S7.5 Push standalone:** repeat S7.1, S7.3 and S7.6 on Push 3 Standalone.
+- **S7.7 Overlapping notes (v6.2):** placeholders on steps 1 and 9, with Length longer than the gap (e.g. 12 steps), so each note is still sounding when the next starts. P-lock different Slide and Pressure values on the two steps. Every note takes its own values, with no stuck values and without touching the knobs. Note which voice mode Meld is in (poly, mono, legato).
 - **S7.6 Breath (v6.1):** Breath (bank Perform, encoder 5) sends CC2 on the master channel (channel 1) with each note, before its note-on, and at once when turned. Map CC2 in the instrument (Meld: check whether its mod matrix offers a CC2 / Breath source; otherwise test with a plug-in that maps CC2) and check that 0 vs 127 changes the sound. A p-lock on one step changes that note.
 
 ## Stage 8: CPU on Push ([#8](https://github.com/coconutPhreak/pitchBender-m4l/issues/8))
