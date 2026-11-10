@@ -76,6 +76,8 @@ Re-run these after changes to the trigger path. Setup: a 1-bar clip with a place
 
 ## Stage 3: p-lock scope on Push ([#3](https://github.com/coconutPhreak/pitchBender-m4l/issues/3))
 
+Tested with v2.1 on Push 3 Standalone on 2026-11-10 (S3.1, S3.3–S3.6; S3.2 couldn't be checked): a step p-lock applies to its own step only. Turning a locked parameter by hand overrides all its locks until automation is re-enabled (Live's standard behaviour). Details in [docs/plock-scope.md](docs/plock-scope.md).
+
 This tests Push's behaviour, not the device's. The device plays whatever value the automation holds when each step triggers, so the question is: does a Push step p-lock cover **only its own step**, or does it **hold until the next breakpoint**? Write the answers in [docs/plock-scope.md](docs/plock-scope.md).
 
 Setup (Push 3 Standalone): a fresh 1-bar clip with a placeholder note on every step (16 notes, each 1 step long), no automation yet. Note at C1, Length 1 step, Velocity 100. Use Debug in Live via Control Mode if you can; otherwise listen.
