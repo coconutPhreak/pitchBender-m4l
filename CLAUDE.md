@@ -15,5 +15,5 @@ A mono Max for Live MIDI effect for bass lines. Each placeholder note triggers t
 - Claude can't run Max or Live. The user tests in Live and on Push and pastes Max console output back.
 - Patcher source is `src/pitchbender.maxpat` (JSON). `python3 scripts/build_amxd.py` builds `build/PitchBender.amxd` (git-ignored). Build straight to `.amxd`: Push banks and device width live at patcher level, and pasting into the device editor loses them. `--extract` brings device-editor edits back into `src/`.
 - `TESTING.md` lists the tests for each stage. Build stages are GitHub issues #1–#8. Close an issue (with "Closes #N" in a commit) and tick its README box only after the user confirms its tests pass on Push.
-- The license is added at the very end of the project.
+- License: MIT (LICENSE), added 2026-11-10.
 - Commit in small steps with clear messages.

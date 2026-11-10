@@ -82,3 +82,7 @@ Test each stage on Push 3 Standalone before you start the next. Each stage has a
 - Bend Amount kept: it scales incoming master-channel bend (decided 2026-11-10)
 - Breath (CC2) added beside Pressure, on the master channel because MPE has no per-note CC2 (2026-11-10)
 - Slide release envelope (v7, 2026-11-10): S Depth, S Rel (up to 400 %, cut off at the note's end), S Curve; Slide is its offset and now per note
+
+## License
+
+MIT. See [LICENSE](LICENSE).
