@@ -59,6 +59,14 @@ def check_patch(patcher: dict, where: str = "patcher") -> None:
             errs.append(f"line {s}:{so} -> {d}:{di}: {s} has only {boxes[s].get('numoutlets', 0)} outlets")
         if di >= boxes[d].get("numinlets", 0):
             errs.append(f"line {s}:{so} -> {d}:{di}: {d} has only {boxes[d].get('numinlets', 0)} inlets")
+    sources = {ln["patchline"]["source"][0] for ln in patcher["lines"]}
+    targets = {ln["patchline"]["destination"][0] for ln in patcher["lines"]}
+    for bid, bx in boxes.items():
+        if bx["maxclass"] == "newobj" and bx.get("numoutlets", 0) and bid not in sources \
+                and bx.get("text", "").split(" ")[0] not in ("inlet", "live.banks"):
+            errs.append(f"{bid} ({bx.get('text')}): output goes nowhere")
+        if bx.get("text", "").split(" ")[0] in ("midiout", "print", "outlet") and bid not in targets:
+            errs.append(f"{bid} ({bx.get('text')}): nothing is connected to it")
     if where == "patcher":
         params = {k: v for k, v in patcher.get("parameters", {}).items() if isinstance(v, list)}
         longnames = {v[0] for v in params.values()}

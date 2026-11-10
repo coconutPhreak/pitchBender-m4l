@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v1.2 (Stage 1): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v1.3 (Stage 1): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -433,7 +433,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v1.2",
+     "text": "PITCHBENDER v1.3",
      "patching_rect": [
       700.0,
       20.0,
@@ -1435,7 +1435,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v1.2",
+     "text": "loaded v1.3",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -2558,6 +2558,18 @@
      "destination": [
       "gate-dbg",
       1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "format",
+      0
+     ],
+     "destination": [
+      "midiout",
+      0
      ]
     }
    }
