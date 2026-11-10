@@ -512,66 +512,6 @@
    },
    {
     "box": {
-     "id": "i-alt",
-     "maxclass": "newobj",
-     "text": "i",
-     "numinlets": 2,
-     "numoutlets": 1,
-     "outlettype": [
-      "int"
-     ],
-     "patching_rect": [
-      1140.0,
-      110.0,
-      40.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
-     "id": "i-chmode",
-     "maxclass": "newobj",
-     "text": "i",
-     "numinlets": 2,
-     "numoutlets": 1,
-     "outlettype": [
-      "int"
-     ],
-     "patching_rect": [
-      1180.0,
-      110.0,
-      40.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
-     "id": "i-range",
-     "maxclass": "newobj",
-     "text": "i",
-     "numinlets": 2,
-     "numoutlets": 1,
-     "outlettype": [
-      "int"
-     ],
-     "patching_rect": [
-      1280.0,
-      110.0,
-      40.0,
-      20.0
-     ],
-     "fontname": "Arial Bold",
-     "fontsize": 10.0
-    }
-   },
-   {
-    "box": {
      "id": "midiin",
      "maxclass": "newobj",
      "text": "midiin",
@@ -2128,42 +2068,6 @@
    {
     "patchline": {
      "source": [
-      "obj-alt",
-      0
-     ],
-     "destination": [
-      "i-alt",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-chmode",
-      0
-     ],
-     "destination": [
-      "i-chmode",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-range",
-      0
-     ],
-     "destination": [
-      "i-range",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
       "midiin",
       0
      ],
@@ -2860,7 +2764,7 @@
    {
     "patchline": {
      "source": [
-      "i-chmode",
+      "obj-chmode",
       0
      ],
      "destination": [
@@ -2872,7 +2776,7 @@
    {
     "patchline": {
      "source": [
-      "i-alt",
+      "obj-alt",
       0
      ],
      "destination": [
@@ -3028,7 +2932,7 @@
    {
     "patchline": {
      "source": [
-      "i-range",
+      "obj-range",
       0
      ],
      "destination": [
