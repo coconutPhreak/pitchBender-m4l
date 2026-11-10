@@ -39,6 +39,6 @@ Test each stage on Push 3 Standalone before you start the next. Each stage has a
 
 ## Open questions
 
-- [ ] Trigger Length values: decided, retrig-m4l's LEN list up to 32 steps (see docs/trigger-length.md); not built yet
+- [x] Trigger Length values: 0.25–8 steps in 0.25s, 8–16 in 0.5s, 16–32 in 1s (64 values, built in v5.1; see docs/trigger-length.md)
 - [x] Bend Range default: 48 each way (MPE per-note standard)
 - [x] Instruments: MPE only (decided 2026-11-10, see docs/mpe-probe.md)

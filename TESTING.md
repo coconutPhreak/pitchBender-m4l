@@ -13,7 +13,7 @@ This file covers building the device, loading it in Live and on Push, and the ch
    This writes `build/PitchBender.amxd`. The build refuses to run if a patch cord points at a missing box or inlet, if a Push bank names an unknown parameter, or if an object class hasn't passed the Push standalone probes.
 2. In Live, make a MIDI track and load an **MPE** bass instrument on it (Meld, Drift, Wavetable, or an MPE plug-in in MPE mode). Since v4.1 the device's output is per-note MPE, so non-MPE instruments (e.g. Operator) won't follow the pitch envelope.
 3. Drag `build/PitchBender.amxd` onto the track, *before* the instrument. Put it directly on the track, not inside a rack, because the clip-stop check watches the track's clip slots.
-4. The device should show Note (C1), Velocity (100), Length (1 step), Attack (20 %), Peak (0 st), A Curve (0), Decay (30 %), End (0 st), D Curve (0), Envelope (On), Bend Rng (48 st) and Scale (On). Under Peak and End, small labels show their target note.
+4. The device should show Note (C1), Velocity (100), Length (1/16, which is 1 step), Attack (20 %), Peak (0 st), A Curve (0), Decay (30 %), End (0 st), D Curve (0), Envelope (On), Bend Rng (48 st) and Scale (On). Under Peak and End, small labels show their target note.
 5. Bend Range is the MPE per-note bend range **each way** (default 48, the MPE standard). It must match the instrument's per-note (MPE) bend range, or every pitch lands off.
 
 After every rebuild, drag the new `PitchBender.amxd` in again to replace the old one.
@@ -42,7 +42,7 @@ Paste the console output back, along with any red error lines that appear when t
 
 ## Load check (do this first)
 
-- **L1:** Load the device. The Max console prints `pitchbender: loaded v5` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
+- **L1:** Load the device. The Max console prints `pitchbender: loaded v5.1` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 
@@ -62,6 +62,7 @@ Use a clip with placeholder notes at different pitches, lengths and velocities. 
 - **S1.10 Tempo:** change the tempo (e.g. 60 vs 180 BPM). The note length follows, staying 1 step.
 - **S1.11 Pass-through:** a CC (mod wheel) and aftertouch reach the instrument unchanged. Pitch bend also passes through raw for now; merging it is Stage 6.
 - **S1.12 Velocity:** set Velocity to 20, then 127. The console and the instrument follow it.
+- **S1.13 Length list (v5.1):** Length goes 1/64 (0.25 step) … 1/2 (8 steps) in 0.25s, then 8.50 … 1/1 (16 steps) in 0.5s, then 17.0 … 32.0 in 1s. Spot-check 1/64, 0.750, 1/16, 8.50 and 32.0 against the grid: each note lasts exactly that many steps (Debug shows `timer_ticks` = steps × 120).
 
 ## Stage 2: p-lock latch ([#2](https://github.com/coconutPhreak/pitchBender-m4l/issues/2))
 

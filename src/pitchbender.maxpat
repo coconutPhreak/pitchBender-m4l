@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v5 (Stage 5, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v5.1 (Stage 5, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -342,23 +342,77 @@
        "parameter_shortname": "Length",
        "parameter_type": 2,
        "parameter_enum": [
+        "1/64",
         "1/32",
-        "1 step",
-        "2 steps",
-        "3 steps",
-        "4 steps",
-        "6 steps",
-        "8 steps",
-        "12 steps",
-        "16 steps",
-        "32 steps"
+        "0.750",
+        "1/16",
+        "1.25",
+        "1.50",
+        "1.75",
+        "1/8",
+        "2.25",
+        "2.50",
+        "2.75",
+        "3.00",
+        "3.25",
+        "3.50",
+        "3.75",
+        "1/4",
+        "4.25",
+        "4.50",
+        "4.75",
+        "5.00",
+        "5.25",
+        "5.50",
+        "5.75",
+        "6.00",
+        "6.25",
+        "6.50",
+        "6.75",
+        "7.00",
+        "7.25",
+        "7.50",
+        "7.75",
+        "1/2",
+        "8.50",
+        "9.00",
+        "9.50",
+        "10.0",
+        "10.5",
+        "11.0",
+        "11.5",
+        "12.0",
+        "12.5",
+        "13.0",
+        "13.5",
+        "14.0",
+        "14.5",
+        "15.0",
+        "15.5",
+        "1/1",
+        "17.0",
+        "18.0",
+        "19.0",
+        "20.0",
+        "21.0",
+        "22.0",
+        "23.0",
+        "24.0",
+        "25.0",
+        "26.0",
+        "27.0",
+        "28.0",
+        "29.0",
+        "30.0",
+        "31.0",
+        "32.0"
        ],
-       "parameter_mmax": 9.0,
+       "parameter_mmax": 63.0,
        "parameter_initial_enable": 1,
        "parameter_initial": [
-        1
+        3
        ],
-       "parameter_annotation_name": "How long the device's note lasts (1 step = 1/16, synced to Live's tempo)"
+       "parameter_annotation_name": "How long the device's note lasts, in steps (1/16 = 1 step), synced to Live's tempo: 0.25-8 in 0.25 steps, 8-16 in 0.5, 16-32 in 1"
       }
      }
     }
@@ -434,7 +488,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v5",
+     "text": "PITCHBENDER v5.1",
      "patching_rect": [
       700.0,
       20.0,
@@ -614,64 +668,388 @@
       "precision": 6
      },
      "coll_data": {
-      "count": 10,
+      "count": 64,
       "data": [
        {
         "key": 0,
         "value": [
-         60
+         30
         ]
        },
        {
         "key": 1,
         "value": [
-         120
+         60
         ]
        },
        {
         "key": 2,
         "value": [
-         240
+         90
         ]
        },
        {
         "key": 3,
         "value": [
-         360
+         120
         ]
        },
        {
         "key": 4,
         "value": [
-         480
+         150
         ]
        },
        {
         "key": 5,
         "value": [
-         720
+         180
         ]
        },
        {
         "key": 6,
         "value": [
-         960
+         210
         ]
        },
        {
         "key": 7,
         "value": [
-         1440
+         240
         ]
        },
        {
         "key": 8,
         "value": [
-         1920
+         270
         ]
        },
        {
         "key": 9,
+        "value": [
+         300
+        ]
+       },
+       {
+        "key": 10,
+        "value": [
+         330
+        ]
+       },
+       {
+        "key": 11,
+        "value": [
+         360
+        ]
+       },
+       {
+        "key": 12,
+        "value": [
+         390
+        ]
+       },
+       {
+        "key": 13,
+        "value": [
+         420
+        ]
+       },
+       {
+        "key": 14,
+        "value": [
+         450
+        ]
+       },
+       {
+        "key": 15,
+        "value": [
+         480
+        ]
+       },
+       {
+        "key": 16,
+        "value": [
+         510
+        ]
+       },
+       {
+        "key": 17,
+        "value": [
+         540
+        ]
+       },
+       {
+        "key": 18,
+        "value": [
+         570
+        ]
+       },
+       {
+        "key": 19,
+        "value": [
+         600
+        ]
+       },
+       {
+        "key": 20,
+        "value": [
+         630
+        ]
+       },
+       {
+        "key": 21,
+        "value": [
+         660
+        ]
+       },
+       {
+        "key": 22,
+        "value": [
+         690
+        ]
+       },
+       {
+        "key": 23,
+        "value": [
+         720
+        ]
+       },
+       {
+        "key": 24,
+        "value": [
+         750
+        ]
+       },
+       {
+        "key": 25,
+        "value": [
+         780
+        ]
+       },
+       {
+        "key": 26,
+        "value": [
+         810
+        ]
+       },
+       {
+        "key": 27,
+        "value": [
+         840
+        ]
+       },
+       {
+        "key": 28,
+        "value": [
+         870
+        ]
+       },
+       {
+        "key": 29,
+        "value": [
+         900
+        ]
+       },
+       {
+        "key": 30,
+        "value": [
+         930
+        ]
+       },
+       {
+        "key": 31,
+        "value": [
+         960
+        ]
+       },
+       {
+        "key": 32,
+        "value": [
+         1020
+        ]
+       },
+       {
+        "key": 33,
+        "value": [
+         1080
+        ]
+       },
+       {
+        "key": 34,
+        "value": [
+         1140
+        ]
+       },
+       {
+        "key": 35,
+        "value": [
+         1200
+        ]
+       },
+       {
+        "key": 36,
+        "value": [
+         1260
+        ]
+       },
+       {
+        "key": 37,
+        "value": [
+         1320
+        ]
+       },
+       {
+        "key": 38,
+        "value": [
+         1380
+        ]
+       },
+       {
+        "key": 39,
+        "value": [
+         1440
+        ]
+       },
+       {
+        "key": 40,
+        "value": [
+         1500
+        ]
+       },
+       {
+        "key": 41,
+        "value": [
+         1560
+        ]
+       },
+       {
+        "key": 42,
+        "value": [
+         1620
+        ]
+       },
+       {
+        "key": 43,
+        "value": [
+         1680
+        ]
+       },
+       {
+        "key": 44,
+        "value": [
+         1740
+        ]
+       },
+       {
+        "key": 45,
+        "value": [
+         1800
+        ]
+       },
+       {
+        "key": 46,
+        "value": [
+         1860
+        ]
+       },
+       {
+        "key": 47,
+        "value": [
+         1920
+        ]
+       },
+       {
+        "key": 48,
+        "value": [
+         2040
+        ]
+       },
+       {
+        "key": 49,
+        "value": [
+         2160
+        ]
+       },
+       {
+        "key": 50,
+        "value": [
+         2280
+        ]
+       },
+       {
+        "key": 51,
+        "value": [
+         2400
+        ]
+       },
+       {
+        "key": 52,
+        "value": [
+         2520
+        ]
+       },
+       {
+        "key": 53,
+        "value": [
+         2640
+        ]
+       },
+       {
+        "key": 54,
+        "value": [
+         2760
+        ]
+       },
+       {
+        "key": 55,
+        "value": [
+         2880
+        ]
+       },
+       {
+        "key": 56,
+        "value": [
+         3000
+        ]
+       },
+       {
+        "key": 57,
+        "value": [
+         3120
+        ]
+       },
+       {
+        "key": 58,
+        "value": [
+         3240
+        ]
+       },
+       {
+        "key": 59,
+        "value": [
+         3360
+        ]
+       },
+       {
+        "key": 60,
+        "value": [
+         3480
+        ]
+       },
+       {
+        "key": 61,
+        "value": [
+         3600
+        ]
+       },
+       {
+        "key": 62,
+        "value": [
+         3720
+        ]
+       },
+       {
+        "key": 63,
         "value": [
          3840
         ]
@@ -1436,7 +1814,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v5",
+     "text": "loaded v5.1",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
