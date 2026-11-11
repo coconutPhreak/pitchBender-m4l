@@ -42,6 +42,25 @@ Push banks, in encoder order.
 | Setup | Bend Rng | 1–96 semitones | 48 | Per-note bend range each way. Must match the instrument. |
 | Setup | Scale | Off / On | On | Follow Live's scale (when Live's Scale Mode is on), or use plain semitones. |
 
+<details>
+<summary><b>Tilt Env examples</b></summary>
+
+With Peak +12, End 0, Length 4 steps at 120 BPM (500 ms), Scale off, Note C1:
+
+| Tilt Env | Shape | What you hear |
+|---|---|---|
+| −200 | Falling ramp, stretched | Starts at C2 and falls slowly; it's only at F#1 when the note ends, and holds there. |
+| −100 | Falling ramp | Starts at C2 and falls to C1 over the whole note. |
+| −50 | Quick rise, slow fall | Up to C2 in 125 ms, then down to C1 over 375 ms. |
+| 0 | Triangle | Up to C2 in 250 ms, back down to C1 by the end. |
+| +50 | Slow rise, quick fall | Up to C2 over 375 ms, then down to C1 in 125 ms. |
+| +100 | Rising ramp | Rises from C1 to C2 over the whole note and holds C2. |
+| +200 | Rising ramp, stretched | Rises slowly; it's only at F#1 when the note ends, and holds there. |
+
+Between −100 and +100, Attack is 50 + Tilt/2 % of Length and Decay is the rest. Beyond ±100 the ramp stretches up to 200 % of Length, so the note ends partway through it.
+
+</details>
+
 A red **CLAMPED** label means the last note's Peak or End went beyond Bend Range, so its pitch stopped at the range limit.
 
 ## Good to know
