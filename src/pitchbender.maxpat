@@ -50,7 +50,7 @@
     "box": {
      "id": "c-title",
      "maxclass": "comment",
-     "text": "PITCHBENDER v1.0.0 (all stages, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
+     "text": "PITCHBENDER v1.1 (Tilt Env, MPE): placeholder notes trigger the device's own Note for Trigger Length. All timing in the Max scheduler, no JS. Only object classes that passed retrig-m4l's Push standalone probes.",
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
@@ -441,8 +441,8 @@
      ],
      "presentation": 1,
      "presentation_rect": [
-      6.0,
-      92.0,
+      56.0,
+      22.0,
       44.0,
       47.0
      ],
@@ -492,7 +492,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v1.0.0",
+     "text": "PITCHBENDER v1.1",
      "patching_rect": [
       700.0,
       20.0,
@@ -1818,7 +1818,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v1.0.0",
+     "text": "loaded v1.1",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -1972,48 +1972,6 @@
    },
    {
     "box": {
-     "id": "obj-attack",
-     "maxclass": "live.dial",
-     "numinlets": 1,
-     "numoutlets": 2,
-     "outlettype": [
-      "",
-      "float"
-     ],
-     "parameter_enable": 1,
-     "varname": "Attack",
-     "patching_rect": [
-      1400.0,
-      60.0,
-      44.0,
-      47.0
-     ],
-     "presentation": 1,
-     "presentation_rect": [
-      56.0,
-      22.0,
-      44.0,
-      47.0
-     ],
-     "saved_attribute_attributes": {
-      "valueof": {
-       "parameter_longname": "Attack",
-       "parameter_shortname": "Attack",
-       "parameter_type": 0,
-       "parameter_unitstyle": 5,
-       "parameter_mmin": 0.0,
-       "parameter_mmax": 100.0,
-       "parameter_initial_enable": 1,
-       "parameter_initial": [
-        20.0
-       ],
-       "parameter_annotation_name": "Time from note-on to Peak, as a % of Trigger Length"
-      }
-     }
-    }
-   },
-   {
-    "box": {
      "id": "obj-peak",
      "maxclass": "live.dial",
      "numinlets": 1,
@@ -2074,7 +2032,7 @@
      ],
      "presentation": 1,
      "presentation_rect": [
-      156.0,
+      256.0,
       22.0,
       44.0,
       47.0
@@ -2092,48 +2050,6 @@
         0.0
        ],
        "parameter_annotation_name": "Attack shape: -100 fast start, 0 linear, +100 slow start and fast snap"
-      }
-     }
-    }
-   },
-   {
-    "box": {
-     "id": "obj-decay",
-     "maxclass": "live.dial",
-     "numinlets": 1,
-     "numoutlets": 2,
-     "outlettype": [
-      "",
-      "float"
-     ],
-     "parameter_enable": 1,
-     "varname": "Decay",
-     "patching_rect": [
-      1580.0,
-      60.0,
-      44.0,
-      47.0
-     ],
-     "presentation": 1,
-     "presentation_rect": [
-      206.0,
-      22.0,
-      44.0,
-      47.0
-     ],
-     "saved_attribute_attributes": {
-      "valueof": {
-       "parameter_longname": "Decay",
-       "parameter_shortname": "Decay",
-       "parameter_type": 0,
-       "parameter_unitstyle": 5,
-       "parameter_mmin": 0.0,
-       "parameter_mmax": 100.0,
-       "parameter_initial_enable": 1,
-       "parameter_initial": [
-        30.0
-       ],
-       "parameter_annotation_name": "Time from Peak to End, as a % of Trigger Length"
       }
      }
     }
@@ -2158,7 +2074,7 @@
      ],
      "presentation": 1,
      "presentation_rect": [
-      256.0,
+      156.0,
       22.0,
       44.0,
       47.0
@@ -2242,7 +2158,7 @@
      ],
      "presentation": 1,
      "presentation_rect": [
-      56.0,
+      6.0,
       92.0,
       44.0,
       47.0
@@ -2645,7 +2561,7 @@
     "box": {
      "id": "expr-y",
      "maxclass": "newobj",
-     "text": "expr $i8 * (($f1 < $f2 / max(100., $f2 + $f3)) * $f4 * pow(min($f1 / max($f2 / max(100., $f2 + $f3), 0.000001), 1.), pow(2., $f6 / 50.)) + ($f1 >= $f2 / max(100., $f2 + $f3)) * ($f1 < ($f2 + $f3) / max(100., $f2 + $f3)) * ($f4 + ($f5 - $f4) * pow(min(max(($f1 - $f2 / max(100., $f2 + $f3)) / max($f3 / max(100., $f2 + $f3), 0.000001), 0.), 1.), pow(2., $f7 / 50.))) + ($f1 >= ($f2 + $f3) / max(100., $f2 + $f3)) * $f5)",
+     "text": "expr $i8 * (($f1 < $f2 / 100.) * $f4 * pow(min($f1 / max($f2 / 100., 0.000001), 1.), pow(2., $f6 / 50.)) + ($f1 >= $f2 / 100.) * ($f1 < ($f2 + $f3) / 100.) * ($f4 + ($f5 - $f4) * pow(min(max(($f1 - $f2 / 100.) / max($f3 / 100., 0.000001), 0.), 1.), pow(2., $f7 / 50.))) + ($f1 >= ($f2 + $f3) / 100.) * (($f3 > 0.) * $f5 + ($f3 <= 0.) * $f4))",
      "numinlets": 8,
      "numoutlets": 1,
      "outlettype": [
@@ -8513,6 +8429,127 @@
      "fontname": "Arial Bold",
      "fontsize": 10.0
     }
+   },
+   {
+    "box": {
+     "id": "obj-tilt",
+     "maxclass": "live.dial",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "varname": "Tilt Env",
+     "patching_rect": [
+      1400.0,
+      60.0,
+      44.0,
+      47.0
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      206.0,
+      22.0,
+      44.0,
+      47.0
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Tilt Env",
+       "parameter_shortname": "Tilt Env",
+       "parameter_type": 1,
+       "parameter_unitstyle": 0,
+       "parameter_mmin": -200.0,
+       "parameter_mmax": 200.0,
+       "parameter_initial_enable": 1,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_annotation_name": "Envelope shape: -100 falling ramp (no attack), 0 triangle, +100 rising ramp (no decay). Beyond +/-100 the ramp overshoots up to 200 % of Length and the note ends partway through it"
+      }
+     }
+    }
+   },
+   {
+    "box": {
+     "id": "t-tilt",
+     "maxclass": "newobj",
+     "text": "t f f",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "float",
+      "float"
+     ],
+     "patching_rect": [
+      1400.0,
+      120.0,
+      60.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-tatt",
+     "maxclass": "newobj",
+     "text": "expr max(0., min(100., 50. + $f1 / 2.)) + max(0., $f1 - 100.)",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1400.0,
+      150.0,
+      439.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "expr-tdec",
+     "maxclass": "newobj",
+     "text": "expr max(0., min(100., 50. - $f1 / 2.)) + max(0., -$f1 - 100.)",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1400.0,
+      180.0,
+      446.0,
+      20.0
+     ],
+     "fontname": "Arial Bold",
+     "fontsize": 10.0
+    }
+   },
+   {
+    "box": {
+     "id": "c-tilt",
+     "maxclass": "comment",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "linecount": 2,
+     "fontname": "Arial Bold",
+     "fontsize": 10.0,
+     "patching_rect": [
+      1400.0,
+      210.0,
+      700.0,
+      34.0
+     ],
+     "text": "Tilt Env (v1.1): -100..+100 morphs falling ramp -> triangle -> rising ramp (Attack + Decay = 100 %). Beyond +/-100 the ramp stretches to 200 % of Length; the envelope stops at the note's end and holds where it got to."
+    }
    }
   ],
   "lines": [
@@ -9365,30 +9402,6 @@
      "destination": [
       "t-trig",
       0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-attack",
-      0
-     ],
-     "destination": [
-      "f-att",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-decay",
-      0
-     ],
-     "destination": [
-      "f-dec",
-      1
      ]
     }
    },
@@ -10384,30 +10397,6 @@
      ],
      "destination": [
       "t-init2",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-init2",
-      2
-     ],
-     "destination": [
-      "obj-attack",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "t-init2",
-      3
-     ],
-     "destination": [
-      "obj-decay",
       0
      ]
     }
@@ -14755,6 +14744,78 @@
       4
      ]
     }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-tilt",
+      0
+     ],
+     "destination": [
+      "t-tilt",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-tilt",
+      1
+     ],
+     "destination": [
+      "expr-tatt",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-tilt",
+      0
+     ],
+     "destination": [
+      "expr-tdec",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-tatt",
+      0
+     ],
+     "destination": [
+      "f-att",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "expr-tdec",
+      0
+     ],
+     "destination": [
+      "f-dec",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "t-init2",
+      2
+     ],
+     "destination": [
+      "obj-tilt",
+      0
+     ]
+    }
    }
   ],
   "parameters": {
@@ -14779,20 +14840,20 @@
      "name": "Pitch",
      "parameters": [
       "Note",
-      "Trigger Length",
-      "Attack",
+      "Velocity",
       "Peak",
-      "Attack Curve",
-      "Decay",
       "End",
-      "Decay Curve"
+      "Tilt Env",
+      "Attack Curve",
+      "Decay Curve",
+      "-"
      ]
     },
     "1": {
      "index": 1,
      "name": "Perform",
      "parameters": [
-      "Velocity",
+      "Trigger Length",
       "Envelope",
       "Slide",
       "Pressure",
@@ -14832,11 +14893,6 @@
     }
    },
    "inherited_shortname": 1,
-   "obj-attack": [
-    "Attack",
-    "Attack",
-    0
-   ],
    "obj-peak": [
     "Peak",
     "Peak",
@@ -14845,11 +14901,6 @@
    "obj-acurve": [
     "Attack Curve",
     "A Curve",
-    0
-   ],
-   "obj-decay": [
-    "Decay",
-    "Decay",
     0
    ],
    "obj-end": [
@@ -14910,6 +14961,11 @@
    "obj-scrv": [
     "Slide Curve",
     "S Curve",
+    0
+   ],
+   "obj-tilt": [
+    "Tilt Env",
+    "Tilt Env",
     0
    ]
   },

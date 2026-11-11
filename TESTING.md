@@ -13,7 +13,7 @@ This file covers building the device, loading it in Live and on Push, and the ch
    This writes `build/PitchBender.amxd`. The build refuses to run if a patch cord points at a missing box or inlet, if a Push bank names an unknown parameter, or if an object class hasn't passed the Push standalone probes.
 2. In Live, make a MIDI track and load an **MPE** bass instrument on it (Meld, Drift, Wavetable, or an MPE plug-in in MPE mode). Since v4.1 the device's output is per-note MPE, so non-MPE instruments (e.g. Operator) won't follow the pitch envelope.
 3. Drag `build/PitchBender.amxd` onto the track, *before* the instrument. Put it directly on the track, not inside a rack, because the clip-stop check watches the track's clip slots.
-4. The device should show Note (C1), Velocity (100), Length (1/16, which is 1 step), Attack (20 %), Peak (0 st), A Curve (0), Decay (30 %), End (0 st), D Curve (0), Envelope (On), Bend Rng (48 st), Scale (On), Slide (64), Pressure (0), Breath (0), Bend Amt (100 %), S Depth (0), S Rel (100 %) and S Curve (0). Under Peak and End, small labels show their target note.
+4. The device should show Note (C1), Velocity (100), Length (1/16, which is 1 step), Peak (0 st), End (0 st), Tilt Env (0), A Curve (0), D Curve (0), Envelope (On), Bend Rng (48 st), Scale (On), Slide (64), Pressure (0), Breath (0), Bend Amt (100 %), S Depth (0), S Rel (100 %) and S Curve (0). Under Peak and End, small labels show their target note.
 5. Bend Range is the MPE per-note bend range **each way** (default 48, the MPE standard). It must match the instrument's per-note (MPE) bend range, or every pitch lands off.
 
 After every rebuild, drag the new `PitchBender.amxd` in again to replace the old one.
@@ -42,7 +42,7 @@ Paste the console output back, along with any red error lines that appear when t
 
 ## Load check (do this first)
 
-- **L1:** Load the device. The Max console prints `pitchbender: loaded v1.0.0` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
+- **L1:** Load the device. The Max console prints `pitchbender: loaded v1.1` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 
@@ -99,6 +99,8 @@ Stage 3 is done once each question has an answer in docs/plock-scope.md. If lock
 ## Stage 4: pitch envelope as pitch bend ([#4](https://github.com/coconutPhreak/pitchBender-m4l/issues/4))
 
 v4.2 (per-note MPE) tested in Live and on Push 3 Standalone with Meld on 2026-11-10 (L1, S4.1–S4.17, P1, P1b): all pass.
+
+**Since v1.1, Attack and Decay are set by Tilt Env** (see the v1.1 section): the Attack/Decay values in these tests are history. Tilt t gives Attack 50 + t/2 % and Decay 50 − t/2 % between −100 and +100.
 
 The envelope goes 0 → Peak over Attack, then Peak → End over Decay, then holds End until the next trigger. Times are % of Trigger Length. Pitches are in semitones for now; scale degrees come in Stage 5. The device sends the starting bend before each note-on. Incoming pitch bend passes through on its own (master) channel, so the instrument adds it on top of each note's bend.
 
@@ -177,9 +179,26 @@ Per-note MPE Slide (CC74) and Pressure, on bank Perform encoders 3 and 4 (Breath
 - **S8.4 Load time:** load the device on a fresh Push standalone track: it appears in a few seconds and its banks show (Pitch, Perform, Slide Env, Setup).
 - **S8.5 Two instances:** two tracks, each with PitchBender and Meld, both running S8.1: still no dropouts.
 
+## v1.1: Tilt Env
+
+Tilt Env (bank Pitch, encoder 5, −200 to +200) replaces Attack and Decay. Between −100 and +100, Attack + Decay always fill the note: Attack = 50 + Tilt/2 %, Decay = 50 − Tilt/2 %. Beyond ±100 the ramp stretches up to 200 % of Length; the envelope stops at the note's end and the pitch holds where it got to. Velocity moved to bank Pitch (encoder 2) and Length to bank Perform (encoder 1).
+
+Setup: Note C1, Length 4 steps at 120 BPM (500 ms), Peak +12, End 0, curves 0, Scale off, an MPE instrument with a sustained sound.
+
+- **T1 Load:** the console prints `pitchbender: loaded v1.1`. Bank Pitch shows Note, Velocity, Peak, End, Tilt Env, A Curve, D Curve; bank Perform shows Length, Envelope, Slide, Pressure, Breath, Bend Amt. No `parameter ... not found` line.
+- **T2 Triangle (Tilt 0):** each note rises from C1 to C2 over 250 ms and falls back to C1 by the note's end.
+- **T3 Falling ramp (Tilt −100):** each note starts at C2 with no slide up and falls to C1 over the whole note.
+- **T4 Rising ramp (Tilt +100):** each note rises from C1 to C2 over the whole note and holds C2 through its release tail (End isn't used at +100 and above).
+- **T5 Morph:** Tilt −50 peaks a quarter of the way in, +50 three quarters of the way in. Turning Tilt between notes changes the next note's shape only.
+- **T6 Overshoot down (Tilt −200):** starts at C2 and is only halfway down (F#1, 6 semitones) when the note ends; the release tail holds there.
+- **T7 Overshoot up (Tilt +200):** rises only halfway (to F#1) by the note's end and holds there. Tilt +150 gets two thirds of the way (G#1).
+- **T8 Curves still work:** Tilt 0, A Curve +100: slow start and fast snap into C2. D Curve −100: fast drop from C2, slow settle.
+- **T9 P-lock:** on Push, p-lock Tilt −100 on one step and +100 on another: each step plays its own shape.
+- **T10 Old Sets:** a Set saved with v1.0.0 loads; any Attack/Decay automation or p-locks are gone (those parameters no longer exist), everything else keeps its values.
+
 ## Push 3
 
-- **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Length, Attack, Peak, A Curve, Decay, End and D Curve on encoders 1–8. Bank **Perform** shows Velocity, Envelope, Slide, Pressure, Breath and Bend Amt on encoders 1–6. Bank **Slide Env** shows Slide, S Depth, S Rel and S Curve on encoders 1–4. Bank **Setup** (now the fourth bank) shows Bend Rng on encoder 3 and Scale on encoder 4. The console shows no `parameter ... not found` line.
+- **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Velocity, Peak, End, Tilt Env, A Curve and D Curve on encoders 1–7 (since v1.1). Bank **Perform** shows Length, Envelope, Slide, Pressure, Breath and Bend Amt on encoders 1–6. Bank **Slide Env** shows Slide, S Depth, S Rel and S Curve on encoders 1–4. Bank **Setup** (now the fourth bank) shows Bend Rng on encoder 3 and Scale on encoder 4. The console shows no `parameter ... not found` line.
 - **P1a Stage 1 on Push:** repeat S1.1, S1.3, S1.5 and S1.6 on Push standalone with a step-sequenced clip.
 - **P1b Stage 4 on Push:** repeat S4.2, S4.5, S4.14, S4.15 and S4.16 on Push standalone. Also play fast notes (1/16 placeholders, Length 1 step, Peak +12, Attack 50 %) on a bass instrument and check that Push's CPU meter stays reasonable and nothing glitches.
 
