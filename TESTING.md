@@ -42,7 +42,7 @@ Paste the console output back, along with any red error lines that appear when t
 
 ## Load check (do this first)
 
-- **L1:** Load the device. The Max console prints `pitchbender: loaded v1.1` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
+- **L1:** Load the device. The Max console prints `pitchbender: loaded v1.1.1` with no red errors, and the controls show the defaults above. If `loaded` doesn't appear, the patch didn't start: paste the console output back.
 
 ## Stage 1: note trigger and stuck-note safety ([#1](https://github.com/coconutPhreak/pitchBender-m4l/issues/1))
 
@@ -185,7 +185,7 @@ Tilt Env (bank Pitch, encoder 6, −200 to +200) replaces Attack and Decay. Betw
 
 Setup: Note C1, Length 4 steps at 120 BPM (500 ms), Peak +12, End 0, curves 0, Scale off, an MPE instrument with a sustained sound.
 
-- **T1 Load:** the console prints `pitchbender: loaded v1.1`. Bank Pitch shows Note, Length, Velocity, Peak, End, Tilt Env, A Curve, D Curve; bank Perform shows Envelope, Slide, Pressure, Breath, Bend Amt. No `parameter ... not found` line.
+- **T1 Load:** the console prints `pitchbender: loaded v1.1.1`. Bank Pitch shows Note, Length, Velocity, Peak, End, Tilt Env, A Curve, D Curve; bank Perform shows Envelope, Slide, Pressure, Breath, Bend Amt. No `parameter ... not found` line.
 - **T2 Triangle (Tilt 0):** each note rises from C1 to C2 over 250 ms and falls back to C1 by the note's end.
 - **T3 Falling ramp (Tilt −100):** each note starts at C2 with no slide up and falls to C1 over the whole note.
 - **T4 Rising ramp (Tilt +100):** each note rises from C1 to C2 over the whole note and holds C2 through its release tail (End isn't used at +100 and above).

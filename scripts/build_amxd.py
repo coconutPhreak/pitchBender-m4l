@@ -88,6 +88,12 @@ def check_patch(patcher: dict, where: str = "patcher") -> None:
                 if n in hidden:
                     errs.append(f"bank {bank['name']!r}: {n!r} is not automatable (parameter_invisible), and Live "
                                 "can't put it in a Push bank ('parameter not found'); make it automatable")
+        for b in patcher["boxes"]:
+            a = b["box"].get("saved_attribute_attributes", {}).get("valueof", {})
+            if a.get("parameter_type") == 1 and a.get("parameter_mmax", 0) - a.get("parameter_mmin", 0) > 255:
+                errs.append(f"{a.get('parameter_longname')!r}: an int parameter holds only 256 values, so "
+                            f"{a.get('parameter_mmin')}..{a.get('parameter_mmax')} gets cut short; make it float "
+                            "(parameter_type 0) with parameter_unitstyle 0 to show whole numbers")
     if errs:
         sys.exit(f"{where}: refusing to build:\n  " + "\n  ".join(errs))
 

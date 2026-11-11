@@ -492,7 +492,7 @@
      "maxclass": "live.comment",
      "numinlets": 1,
      "numoutlets": 0,
-     "text": "PITCHBENDER v1.1",
+     "text": "PITCHBENDER v1.1.1",
      "patching_rect": [
       700.0,
       20.0,
@@ -1818,7 +1818,7 @@
     "box": {
      "id": "m-loaded",
      "maxclass": "message",
-     "text": "loaded v1.1",
+     "text": "loaded v1.1.1",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -8459,13 +8459,13 @@
       "valueof": {
        "parameter_longname": "Tilt Env",
        "parameter_shortname": "Tilt Env",
-       "parameter_type": 1,
+       "parameter_type": 0,
        "parameter_unitstyle": 0,
        "parameter_mmin": -200.0,
        "parameter_mmax": 200.0,
        "parameter_initial_enable": 1,
        "parameter_initial": [
-        0
+        0.0
        ],
        "parameter_annotation_name": "Envelope shape: -100 falling ramp (no attack), 0 triangle, +100 rising ramp (no decay). Beyond +/-100 the ramp overshoots up to 200 % of Length and the note ends partway through it"
       }
