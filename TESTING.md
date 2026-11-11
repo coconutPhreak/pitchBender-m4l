@@ -144,7 +144,7 @@ Setup: as Stage 4 (placeholders every 4 steps, Length 4 steps, Meld per-note ran
 
 ## Stage 6: incoming bend and Bend Amount ([#6](https://github.com/coconutPhreak/pitchBender-m4l/issues/6))
 
-Incoming pitch bend (Push's touch strip, a clip's pitch-bend envelope, an earlier device) arrives on the MPE master channel. The device scales it by **Bend Amount** (bank Perform, encoder 6) and passes it on in 14-bit; the instrument adds it to each note's own bend. Since v7.1 the device reads incoming bend from the raw MIDI bytes (exact 14-bit; v6's `@hires` mode gave 7-bit values and a constant transposition at Bend Amount below 100 %), passes on only master-channel (channel 1) bend, and drops per-note bend, Slide and Pressure arriving on the placeholders' member channels. With Debug on, every incoming bend prints as `in_bend_ch_val C V` (C = channel, V = 0–16383, 8192 = centre).
+Incoming pitch bend (Push's touch strip, a clip's pitch-bend envelope, an earlier device) arrives on the MPE master channel. The device scales it by **Bend Amount** (bank Perform, encoder 5 since v1.1) and passes it on in 14-bit; the instrument adds it to each note's own bend. Since v7.1 the device reads incoming bend from the raw MIDI bytes (exact 14-bit; v6's `@hires` mode gave 7-bit values and a constant transposition at Bend Amount below 100 %), passes on only master-channel (channel 1) bend, and drops per-note bend, Slide and Pressure arriving on the placeholders' member channels. With Debug on, every incoming bend prints as `in_bend_ch_val C V` (C = channel, V = 0–16383, 8192 = centre).
 
 - **S6.1 Adds on top:** Peak +7, End +7. Hold the touch strip up while notes play: the whole pitch, envelope included, moves up together.
 - **S6.2 Smooth:** sweep the touch strip slowly over its whole range. The bend is smooth, with no 7-bit stepping (about a sixth of a semitone at ±24 would be audible as steps).
@@ -156,7 +156,7 @@ Incoming pitch bend (Push's touch strip, a clip's pitch-bend envelope, an earlie
 
 ## Stage 7: Slide and Pressure ([#7](https://github.com/coconutPhreak/pitchBender-m4l/issues/7))
 
-Per-note MPE Slide (CC74) and Pressure, on bank Perform encoders 3 and 4 (Breath, a master-channel CC2, is on encoder 5 since v6.1), sent on each note's own channel after its starting bend and before its note-on, and again straight after the note-on (since v6.2). In Meld's modulation matrix, map **MPE Slide** to the filter cutoff and **MPE Pressure** to something else audible.
+Per-note MPE Slide (CC74) and Pressure, on bank Perform encoders 2 and 3 since v1.1 (Breath, a master-channel CC2, is on encoder 4), sent on each note's own channel after its starting bend and before its note-on, and again straight after the note-on (since v6.2). In Meld's modulation matrix, map **MPE Slide** to the filter cutoff and **MPE Pressure** to something else audible.
 
 - **S7.1 Per note:** Slide 0 vs 127 changes the cutoff on the next notes. Same for Pressure.
 - **S7.2 Live knob:** turn Pressure while a long note (Length 16 steps) holds: the sound follows at once. Slide is per note since v7: turning it changes the next note, not the one playing.
@@ -169,7 +169,7 @@ Per-note MPE Slide (CC74) and Pressure, on bank Perform encoders 3 and 4 (Breath
 - **S7.10 Curve:** S Curve −100 drops fast then tails off (classic filter decay); +100 holds high then closes quickly at the end.
 - **S7.11 Negative depth:** Slide 100, S Depth −100: each note rises from 0 to 100.
 - **S7.12 Overlap and p-locks:** placeholders on steps 1 and 9, Length 12 steps, different S Depth p-locks per step: each note gets its own sweep, and the first note's tail keeps its own Slide.
-- **S7.6 Breath (v6.1):** Breath (bank Perform, encoder 5) sends CC2 on the master channel (channel 1) with each note, before its note-on, and at once when turned. Map CC2 in the instrument (Meld: check whether its mod matrix offers a CC2 / Breath source; otherwise test with a plug-in that maps CC2) and check that 0 vs 127 changes the sound. A p-lock on one step changes that note.
+- **S7.6 Breath (v6.1):** Breath (bank Perform, encoder 4) sends CC2 on the master channel (channel 1) with each note, before its note-on, and at once when turned. Map CC2 in the instrument (Meld: check whether its mod matrix offers a CC2 / Breath source; otherwise test with a plug-in that maps CC2) and check that 0 vs 127 changes the sound. A p-lock on one step changes that note.
 
 ## Stage 8: CPU on Push ([#8](https://github.com/coconutPhreak/pitchBender-m4l/issues/8))
 
@@ -181,11 +181,11 @@ Per-note MPE Slide (CC74) and Pressure, on bank Perform encoders 3 and 4 (Breath
 
 ## v1.1: Tilt Env
 
-Tilt Env (bank Pitch, encoder 5, −200 to +200) replaces Attack and Decay. Between −100 and +100, Attack + Decay always fill the note: Attack = 50 + Tilt/2 %, Decay = 50 − Tilt/2 %. Beyond ±100 the ramp stretches up to 200 % of Length; the envelope stops at the note's end and the pitch holds where it got to. Velocity moved to bank Pitch (encoder 2) and Length to bank Perform (encoder 1).
+Tilt Env (bank Pitch, encoder 6, −200 to +200) replaces Attack and Decay. Between −100 and +100, Attack + Decay always fill the note: Attack = 50 + Tilt/2 %, Decay = 50 − Tilt/2 %. Beyond ±100 the ramp stretches up to 200 % of Length; the envelope stops at the note's end and the pitch holds where it got to. Velocity moved to bank Pitch (encoder 3).
 
 Setup: Note C1, Length 4 steps at 120 BPM (500 ms), Peak +12, End 0, curves 0, Scale off, an MPE instrument with a sustained sound.
 
-- **T1 Load:** the console prints `pitchbender: loaded v1.1`. Bank Pitch shows Note, Velocity, Peak, End, Tilt Env, A Curve, D Curve; bank Perform shows Length, Envelope, Slide, Pressure, Breath, Bend Amt. No `parameter ... not found` line.
+- **T1 Load:** the console prints `pitchbender: loaded v1.1`. Bank Pitch shows Note, Length, Velocity, Peak, End, Tilt Env, A Curve, D Curve; bank Perform shows Envelope, Slide, Pressure, Breath, Bend Amt. No `parameter ... not found` line.
 - **T2 Triangle (Tilt 0):** each note rises from C1 to C2 over 250 ms and falls back to C1 by the note's end.
 - **T3 Falling ramp (Tilt −100):** each note starts at C2 with no slide up and falls to C1 over the whole note.
 - **T4 Rising ramp (Tilt +100):** each note rises from C1 to C2 over the whole note and holds C2 through its release tail (End isn't used at +100 and above).
@@ -198,7 +198,7 @@ Setup: Note C1, Length 4 steps at 120 BPM (500 ms), Peak +12, End 0, curves 0, S
 
 ## Push 3
 
-- **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Velocity, Peak, End, Tilt Env, A Curve and D Curve on encoders 1–7 (since v1.1). Bank **Perform** shows Length, Envelope, Slide, Pressure, Breath and Bend Amt on encoders 1–6. Bank **Slide Env** shows Slide, S Depth, S Rel and S Curve on encoders 1–4. Bank **Setup** (now the fourth bank) shows Bend Rng on encoder 3 and Scale on encoder 4. The console shows no `parameter ... not found` line.
+- **P1 Load on standalone:** on a fresh Push standalone track, load the device. It loads with no "missing or incompatible Max objects" message. Bank **Pitch** shows Note, Length, Velocity, Peak, End, Tilt Env, A Curve and D Curve on encoders 1–8 (since v1.1). Bank **Perform** shows Envelope, Slide, Pressure, Breath and Bend Amt on encoders 1–5. Bank **Slide Env** shows Slide, S Depth, S Rel and S Curve on encoders 1–4. Bank **Setup** (now the fourth bank) shows Bend Rng on encoder 3 and Scale on encoder 4. The console shows no `parameter ... not found` line.
 - **P1a Stage 1 on Push:** repeat S1.1, S1.3, S1.5 and S1.6 on Push standalone with a step-sequenced clip.
 - **P1b Stage 4 on Push:** repeat S4.2, S4.5, S4.14, S4.15 and S4.16 on Push standalone. Also play fast notes (1/16 placeholders, Length 1 step, Peak +12, Attack 50 %) on a bass instrument and check that Push's CPU meter stays reasonable and nothing glitches.
 

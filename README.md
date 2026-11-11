@@ -14,7 +14,7 @@ Full spec: [Pitch Envelope MIDI Effect — Spec](https://claude.ai/artifact/BATf
 
 1. Put PitchBender on a MIDI track, then an MPE instrument such as Meld after it. Check that the instrument's per-note bend range matches Bend Range (48).
 2. Make a clip with notes wherever you want the bass to play. Their pitch doesn't matter: each one triggers the device's Note.
-3. Set Note, Length (bank Perform) and the envelope (Peak, End, Tilt Env). On Push, hold a step and turn an encoder to p-lock that step (for example, Peak +7 for a slide up a fifth on one note).
+3. Set Note, Length and the envelope (Peak, End, Tilt Env). On Push, hold a step and turn an encoder to p-lock that step (for example, Peak +7 for a slide up a fifth on one note).
 
 ## Controls
 
@@ -23,13 +23,13 @@ Push banks, in encoder order.
 | Bank | Control | Range | Default | What it does |
 |---|---|---|---|---|
 | Pitch | Note | MIDI note | C1 | The note played on each trigger. Snaps down to the scale when Scale is on. |
+| Pitch | Length | 1/64 (0.25 step) to 32 steps | 1/16 (1 step) | How long the note lasts, synced to tempo. |
 | Pitch | Velocity | 1–127 | 100 | Velocity of the device's note. |
 | Pitch | Peak | ±24 | 0 | Where the attack goes (and where a falling ramp starts), in scale degrees from Note (semitones with Scale off). The label shows the target note. |
 | Pitch | End | ±24 | 0 | Where the decay settles and holds, through the note's release, until the next note. Not used at Tilt +100 and above. |
 | Pitch | Tilt Env | −200 to +200 | 0 | Envelope shape. −100 falling ramp (starts at Peak, falls to End over the whole note), 0 triangle (half up, half down), +100 rising ramp (rises to Peak over the whole note and holds it). Beyond ±100 the ramp overshoots up to 200 % of Length: the note ends partway through and its pitch holds where it got to. |
 | Pitch | A Curve | −100 to +100 | 0 | Attack shape: −100 fast start, 0 straight, +100 slow start with a fast snap (the classic slide). |
 | Pitch | D Curve | −100 to +100 | 0 | Decay shape, like A Curve. |
-| Perform | Length | 1/64 (0.25 step) to 32 steps | 1/16 (1 step) | How long the note lasts, synced to tempo. |
 | Perform | Envelope | Off / On | On | Pitch envelope on or off (p-lock it so only some steps slide). |
 | Perform | Slide | 0–127 | 64 | Per-note MPE Slide (CC74), e.g. mapped to cutoff in the instrument. With S Depth 0 it's a static value; otherwise it's where the Slide envelope ends (its offset). Also on bank Slide Env. |
 | Perform | Pressure | 0–127 | 0 | Per-note MPE Pressure. Map it in the instrument. |
@@ -81,7 +81,7 @@ Test each stage on Push 3 Standalone before you start the next. Each stage has a
 - Instruments: MPE only (decided 2026-11-10; see docs/mpe-probe.md)
 - Bend Amount kept: it scales incoming master-channel bend (decided 2026-11-10)
 - Breath (CC2) added beside Pressure, on the master channel because MPE has no per-note CC2 (2026-11-10)
-- Tilt Env (v1.1, 2026-11-11) replaces Attack and Decay: −100 falling ramp, 0 triangle, +100 rising ramp, overshoot to 200 % at ±200. Velocity moved to bank Pitch, Length to bank Perform
+- Tilt Env (v1.1, 2026-11-11) replaces Attack and Decay: −100 falling ramp, 0 triangle, +100 rising ramp, overshoot to 200 % at ±200. Velocity moved to bank Pitch
 - Slide release envelope (v7, 2026-11-10): S Depth, S Rel (up to 400 %, cut off at the note's end), S Curve; Slide is its offset and now per note
 
 ## License

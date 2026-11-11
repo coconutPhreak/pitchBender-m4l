@@ -14840,25 +14840,25 @@
      "name": "Pitch",
      "parameters": [
       "Note",
+      "Trigger Length",
       "Velocity",
       "Peak",
       "End",
       "Tilt Env",
       "Attack Curve",
-      "Decay Curve",
-      "-"
+      "Decay Curve"
      ]
     },
     "1": {
      "index": 1,
      "name": "Perform",
      "parameters": [
-      "Trigger Length",
       "Envelope",
       "Slide",
       "Pressure",
       "Breath",
       "Bend Amount",
+      "-",
       "-",
       "-"
      ]
